@@ -5,7 +5,8 @@ const jwt = require("jsonwebtoken");
 
 const { TOKEN_KEY, TOKEN_EXPIRY } = process.env;
 
-function createToken(payload) {
+function createToken(user) {
+    const payload = { id: user._id, email: user.email, name: user.name }
     return jwt.sign({ payload }, TOKEN_KEY, { expiresIn: TOKEN_EXPIRY });
 };
 
@@ -20,7 +21,7 @@ exports.signUp = async (data) => {
             throw Error("Email sudah terpakai")
         }
 
-        //Hash Password
+        //Hash Password 
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create new user
@@ -53,7 +54,7 @@ exports.signIn = async (data) => {
         if (await bcrypt.compare(password, fetchedUser.password)) {
 
             //create user token
-            const generatedToken = createToken(fetchedUser._id);
+            const generatedToken = createToken(fetchedUser);
             fetchedUser.token = generatedToken;
 
             return fetchedUser;

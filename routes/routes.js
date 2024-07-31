@@ -1,5 +1,6 @@
 const express = require("express");
 const authController = require('../controllers/authController');
+const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -9,6 +10,9 @@ router.get("/", (req, res) => {
 });
 
 // Auth's routes
+router.get("/private-test", authMiddleware.verifyToken, (req, res) => {
+    res.status(200).send(`You're in the private territory of ${req.currentUser.payload.email}`);
+})
 router.post("/signup", authController.signUp);
 router.post("/signin", authController.signIn);
 
