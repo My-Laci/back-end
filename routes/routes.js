@@ -1,5 +1,6 @@
 const express = require("express");
 const authController = require('../controllers/authController');
+const otpController = require('../controllers/otpController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 
@@ -16,4 +17,6 @@ router.get("/private-test", authMiddleware.verifyToken, (req, res) => {
 router.post("/signup", authController.signUp);
 router.post("/signin", authController.signIn);
 
+//OTP's routes
+router.post("/otp", otpController.otp);
 module.exports = router;
