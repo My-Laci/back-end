@@ -11,7 +11,7 @@ const generateOTP = async () => {
     }
 }
 
-exports.sendOTP = async ({ email, subject, message, duration = 1 }) => {
+exports.sendOTP = async ({ email, subject, message, duration = 5 }) => {
     try {
         if (!(email && subject && message)) {
             throw Error("Provide values for emial, subject, message");
@@ -28,7 +28,29 @@ exports.sendOTP = async ({ email, subject, message, duration = 1 }) => {
             from: AUTH_EMAIL,
             to: email,
             subject,
-            html: `<p>${message}</p><p style="color:tomato;font-size:25px;letter-spacing:2px;"><b>${generatedOTP}</b></p><p>This code <b> expires in ${duration} hour(s) </b>.</p>`,
+            html: `
+            <div style="font-family: 'Nunito Sans', Arial, sans-serif; color: #333;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                </div>
+                <h2 style="background-color: #01BAF2; color: white; padding: 10px 0; text-align: center; margin: 0;">
+                    Your One-Time Password (OTP)
+                </h2>
+                <div style="padding: 20px; border: 1px solid #ddd;">
+                    <p style="font-size: 18px; margin-bottom: 10px;">${message}</p>
+                    <p style="color: #01BAF2; font-size: 30px; font-weight: bold; text-align: center; letter-spacing: 5px;">
+                        ${generatedOTP}
+                    </p>
+                    <p style="font-size: 16px; margin-top: 10px;">
+                        This code <span style="color: #F18931; font-weight: bold;">expires in ${duration} minute(s)</span>.
+                    </p>
+                    <p style="font-size: 14px; color: #555; margin-top: 20px;">
+                        If you did not request this code, please ignore this email.
+                    </p>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <p style="font-size: 12px; color: #aaa;">&copy;2024 Copyright Laci Team. All rights reserved.</p>
+                </div>
+            </div>`,
 
         };
         await sendEmail(mailOptions);
@@ -39,7 +61,7 @@ exports.sendOTP = async ({ email, subject, message, duration = 1 }) => {
             email,
             otp: hashedTOP,
             createdAt: Date.now(),
-            expiresAt: Date.now() + 3600000 * +duration,
+            expiresAt: Date.now() + 60000 * +duration, // 60000 ms = 1 minute
         })
 
         const createdOTPRecord = await newOTP.save();
