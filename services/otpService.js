@@ -49,3 +49,46 @@ exports.sendOTP = async ({ email, subject, message, duration = 1 }) => {
         throw Error;
     }
 }
+
+exports.verifyOTP = async ({ email, otp }) => {
+    try {
+        if (!(email && otp)) {
+            throw Error("Provide values for email and otp");
+        }
+
+        const matchedOTPRecord = await OTP.findOne({ email });
+
+        if (!(matchedOTPRecord)) {
+            throw Error("No OTP records found")
+        }
+
+        const { expiresAt, otp: hashedOTP } = matchedOTPRecord;
+
+        if (expiresAt < Date.now()) {
+            await OTP.deleteOne({ email });
+            throw Error("Code has expired. Request for a new one.");
+        }
+
+        //not expired yet, verify value
+        const validOTP = await bcrypt.compare(otp, hashedOTP);
+
+        if (!validOTP) {
+            throw Error("Invalid OTP. Please try again.");
+        }
+
+        // OTP is valid and not expired
+        return { success: true, message: "OTP verified successfully" };
+
+
+    } catch (error) {
+        throw Error(error.message || "An error occurred during OTP verification");
+    }
+}
+
+exports.deleteOTP = async (email) => {
+    try {
+        await OTP.deleteOne({ email })
+    } catch (error) {
+        throw error;
+    }
+}

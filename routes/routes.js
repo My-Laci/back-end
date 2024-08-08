@@ -18,5 +18,6 @@ router.post("/signup", authController.signUp);
 router.post("/signin", authController.signIn);
 
 //OTP's routes
-router.post("/otp", otpController.otp);
+router.post("/sendOTP", otpController.sendOTP);
+router.post("/verifyOTP", otpController.verifyOTP);
 module.exports = router;
