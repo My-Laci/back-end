@@ -21,10 +21,17 @@ router.get("/private-test", authMiddleware.verifyToken, (req, res) => {
     );
 });
 router.post("/signup", authController.signUp);
+router.post("/verifySignup", authController.verifySignUpOTP);
 router.post("/signin", authController.signIn);
 
 //OTP's routes
-router.post("/otp", otpController.otp);
+router.post("/sendOTP", otpController.sendOTP);
+router.post("/verifyOTP", otpController.verifyOTP);
+
+//Email Verification's routes
+// router.post("/sendEmailVerification", emailVerifController.sendVerificationOTP);
+// router.post("/verifyEmail", emailVerifController.verifyOTP);
+
 module.exports = router;
 
 // Article routes
