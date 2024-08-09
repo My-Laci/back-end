@@ -1,6 +1,7 @@
 const express = require("express");
 const authController = require("../controllers/authController");
 const otpController = require("../controllers/otpController");
+const userController = require("../controllers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/upload");
 const articleController = require("../controllers/articleController");
@@ -28,7 +29,6 @@ router.post("/signin", authController.signIn);
 router.post("/sendOTP", otpController.sendOTP);
 router.post("/verifyOTP", otpController.verifyOTP);
 
-// Article routes
 router.post(
   "/articles",
   authMiddleware.verifyToken,
