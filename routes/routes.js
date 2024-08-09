@@ -24,5 +24,6 @@ router.post("/verifyOTP", otpController.verifyOTP);
 
 //Email Verification's routes
 router.post("/sendEmailVerification", emailVerifController.sendVerificationOTPEmail);
+router.post("/verifyEmail", emailVerifController.verifyOTPEmail);
 
 module.exports = router;
