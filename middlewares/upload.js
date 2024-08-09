@@ -1,30 +1,60 @@
 const multer = require("multer");
 const path = require("path");
+const { GridFsStorage } = require("multer-gridfs-storage");
+const crypto = require("crypto");
+const mongoose = require("mongoose");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${Date.now()}-${file.originalname}`);
+// Menggunakan koneksi dari db.js
+const conn = mongoose.connection;
+
+const storage = new GridFsStorage({
+  db: conn, // Menggunakan koneksi yang sudah ada
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = buf.toString("hex") + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: "uploads",
+        };
+        console.log(filename, fileInfo);
+        resolve(fileInfo);
+      });
+    });
   },
 });
 
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
+console.log("satu");
+
+exports.upload = multer({
+  storage,
+  limits: { fileSize: 10000000 }, // 10MB limit
+  fileFilter: (req, file, cb) => {
+    checkFileType(file, cb);
+  },
+}).single("image");
+
+console.log("dua");
+
+const checkFileType = (file, cb) => {
+  // Allowed extensions
+  const filetypes = /jpeg|jpg|png|gif/;
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+
+  console.log("atas");
+  console.log("File type check:", extname, mimetype);
+
+  if (mimetype && extname) {
+    console.log("File type check:", extname, mimetype);
+    // console.log(cb);
+    return cb(null, true);
   } else {
-    cb(new Error("Only jpg, jpeg, and png files are allowed"), false);
+    cb("Error: Images Only!");
   }
+
+  console.log("bawah");
 };
-
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 1024 * 1024 * 5, // 5MB
-  },
-  fileFilter: fileFilter,
-});
-
-module.exports = upload;
