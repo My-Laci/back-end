@@ -32,33 +32,56 @@ router.post("/verifyOTP", otpController.verifyOTP);
 // router.post("/sendEmailVerification", emailVerifController.sendVerificationOTP);
 // router.post("/verifyEmail", emailVerifController.verifyOTP);
 
-module.exports = router;
-
-// Article routes
-router.get(
-  "/articles",
-  authMiddleware.verifyToken,
-  articleController.getAllArticles
-);
-router.get(
-  "/articles/:id",
-  authMiddleware.verifyToken,
-  articleController.getArticleById
-);
-router.get(
-  "/articles/user/:userId",
-  authMiddleware.verifyToken,
-  articleController.getArticlesByUser
-);
+// Create an article
 router.post(
-  "/articles",
+  "/create",
   authMiddleware.verifyToken,
   upload.single("image"),
-  articleController.createArticle
+  async (req, res) => {
+    try {
+      const articleData = {
+        title: req.body.title,
+        content: req.body.content,
+        author: req.currentUser.payload.id,
+      };
+
+      if (req.file) {
+        articleData.imageFilename = req.file.filename;
+      }
+
+      const newArticle = new Article(articleData);
+      await newArticle.save();
+      res.status(201).json(newArticle);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 );
-router.put(
-  "/articles/:id",
-  authMiddleware.verifyToken,
-  upload.single("image"),
-  articleController.updateArticle
-);
+
+// Get all articles
+router.get("/", async (req, res) => {
+  try {
+    const articles = await Article.find().populate("author", "name email");
+    res.status(200).json(articles);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Get article by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const article = await Article.findById(req.params.id).populate(
+      "author",
+      "name email"
+    );
+    if (!article) {
+      return res.status(404).json({ error: "Article not found" });
+    }
+    res.status(200).json(article);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+module.exports = router;
