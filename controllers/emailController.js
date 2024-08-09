@@ -1,6 +1,6 @@
-const emailVerifService = require("../services/emailVerifService");
+const emailVerifService = require("../services/emailService");
 
-exports.sendVerificationOTPEmail = async (req, res) => {
+exports.sendVerificationOTP = async (req, res) => {
     try {
         const { email } = req.body;
         if (!email) throw Error("An email is required");
@@ -12,7 +12,18 @@ exports.sendVerificationOTPEmail = async (req, res) => {
     }
 };
 
-exports.verifyOTPEmail = async (req, res) => {
+exports.sendVerificationOTPSignUp = async (email) => {
+    try {
+        if (!email) throw Error("An email is required");
+
+        const createdEmailVerificationOTP = await emailVerifService.sendVerificationOTPSignUp(email);
+        return createdEmailVerificationOTP;
+    } catch (error) {
+        throw error; // Propagate the error so it can be caught and handled in authController.js
+    }
+};
+
+exports.verifyOTP = async (req, res) => {
     try {
         let { email, otp } = req.body;
         if (!(email && otp)) throw Error("Empty OTP details are not allowed");
@@ -23,3 +34,4 @@ exports.verifyOTPEmail = async (req, res) => {
         res.status(400).send(error.message);
     }
 };
+
