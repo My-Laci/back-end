@@ -1,18 +1,21 @@
-const Article = require('../models/Article');
+const Article = require("../models/Article");
 
 // Get all articles
 const getAllArticles = async () => {
-  return await Article.find().populate('author', 'name');
+  return await Article.find().populate("author", "name email");
 };
 
 // Get article by ID
 const getArticleById = async (id) => {
-  return await Article.findById(id).populate('author', 'name');
+  return await Article.findById(id).populate("author", "name email");
 };
 
 // Get articles by user
 const getArticlesByUser = async (userId) => {
-  return await Article.find({ author: userId }).populate('author', 'name');
+  return await Article.find({ author: userId }).populate(
+    "author",
+    "name email"
+  );
 };
 
 // Create new article
@@ -25,12 +28,12 @@ const createArticle = async (articleData) => {
 const updateArticle = async (id, articleData) => {
   const article = await Article.findById(id);
   if (!article) {
-    throw new Error('Article not found');
+    throw new Error("Article not found");
   }
 
   article.title = articleData.title || article.title;
   article.content = articleData.content || article.content;
-  article.image = articleData.image || article.image;
+  article.imageFilename = articleData.imageFilename || article.imageFilename;
 
   return await article.save();
 };
