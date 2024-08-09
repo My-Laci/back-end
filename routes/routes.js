@@ -1,6 +1,7 @@
 const express = require("express");
 const authController = require('../controllers/authController');
 const otpController = require('../controllers/otpController');
+const emailVerifController = require('../controllers/emailVerifController');
 const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 
@@ -20,4 +21,8 @@ router.post("/signin", authController.signIn);
 //OTP's routes
 router.post("/sendOTP", otpController.sendOTP);
 router.post("/verifyOTP", otpController.verifyOTP);
+
+//Email Verification's routes
+router.post("/sendEmailVerification", emailVerifController.sendVerificationOTPEmail);
+
 module.exports = router;
