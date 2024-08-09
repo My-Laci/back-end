@@ -1,7 +1,7 @@
 const Otp = require("../models/otp");
 const otpService = require('../services/otpService')
 
-exports.otp = async (req, res) => {
+exports.sendOTP = async (req, res) => {
     try {
         const { email, subject, message, duration } = req.body;
 
@@ -16,3 +16,13 @@ exports.otp = async (req, res) => {
         res.status(400).send(error.message);
     }
 };
+
+exports.verifyOTP = async (req, res) => {
+    try {
+        let { email, otp } = req.body;
+        const validOTP = await otpService.verifyOTP({ email, otp })
+        res.status(200).json({ valid: validOTP });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+}

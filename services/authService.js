@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
+const TempUser = require('../models/tempUser');
 const jwt = require("jsonwebtoken");
-
 
 const { TOKEN_KEY, TOKEN_EXPIRY } = process.env;
 
@@ -16,24 +16,24 @@ exports.signUp = async (data) => {
 
         // Check existing users
         const existingUser = await User.findOne({ email });
+        const existingTempUser = await TempUser.findOne({ email });
 
-        if (existingUser) {
-            throw Error("Email sudah terpakai")
+        if (existingUser || existingTempUser) {
+            throw Error("Email sudah terpakai");
         }
-
         //Hash Password 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create new user
-        const newUser = new User({
+        // Create new temporary user
+        const newTempUser = new TempUser({
             name,
             email,
             password: hashedPassword,
         });
-        await newUser.save();
+        await newTempUser.save();
 
         // Return the new user without the password
-        return { id: newUser._id, name: newUser.name, email: newUser.email }
+        return { id: newTempUser._id, name: newTempUser.name, email: newTempUser.email }
     } catch (error) {
         throw error;
     }
@@ -46,10 +46,11 @@ exports.signIn = async (data) => {
         const { email, password } = data;
         const fetchedUser = await User.findOne({ email });
 
-        //check if user exist
+        //check if user exists
         if (!fetchedUser) {
             throw Error("User Not Found!");
         }
+
 
         if (await bcrypt.compare(password, fetchedUser.password)) {
 
@@ -57,14 +58,42 @@ exports.signIn = async (data) => {
             const generatedToken = createToken(fetchedUser);
             fetchedUser.token = generatedToken;
 
-            return fetchedUser;
+            // Return user data without the password
+            const { password, ...userWithoutPassword } = fetchedUser._doc;
+            return userWithoutPassword;
 
         } else {
             throw Error("Invalid Password!");
-
         }
 
     } catch (error) {
         throw error;
     }
 }
+
+exports.completeSignUp = async (email) => {
+    try {
+        // Retrieve temporary user data
+        const tempUser = await TempUser.findOne({ email });
+
+        if (!tempUser) {
+            throw Error("Temporary user not found. Please sign up again.");
+        }
+
+        // Create the permanent user in the `users` collection
+        const newUser = new User({
+            name: tempUser.name,
+            email: tempUser.email,
+            password: tempUser.password,
+        });
+        await newUser.save();
+
+        // Delete the temporary user
+        await TempUser.deleteOne({ email });
+
+        // Return the new user without the password
+        return { id: newUser._id, name: newUser.name, email: newUser.email };
+    } catch (error) {
+        throw error;
+    }
+};
