@@ -25,6 +25,10 @@ router.post("/signup", authController.signUp);
 router.post("/verifySignup", authController.verifySignUpOTP);
 router.post("/signin", authController.signIn);
 
+// User's routes
+router.post("/requestResetPassword", userController.forgotPassword);
+router.post("/resetPassword", userController.updatePassword);
+
 // OTP's routes
 router.post("/sendOTP", otpController.sendOTP);
 router.post("/verifyOTP", otpController.verifyOTP);

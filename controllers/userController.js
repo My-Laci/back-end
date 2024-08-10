@@ -11,3 +11,15 @@ exports.forgotPassword = async (req, res) => {
         res.statu(400).send(error.message);
     }
 };
+
+exports.updatePassword = async (req, res) => {
+    try {
+        let { email, otp, newPassword } = req.body;
+        if (!(email && otp && newPassword)) throw Error("Please provide the credentials needed.");
+
+        await userService.resetPassword({ email, otp, newPassword });
+        res.status(200).json({ email, passwordreset: true });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+}
