@@ -23,7 +23,7 @@ exports.forgotPassword = async (req, res) => {
     }
 };
 
-exports.updatePassword = async (req, res) => {
+exports.resetPassword = async (req, res) => {
     try {
         let { email, otp, newPassword } = req.body;
         if (!(email && otp && newPassword)) throw Error("Please provide the credentials needed.");
@@ -34,3 +34,36 @@ exports.updatePassword = async (req, res) => {
         res.status(400).send(error.message);
     }
 }
+
+exports.updatePassword = async (req, res) => {
+    try {
+        const { email, oldPassword, newPassword } = req.body;
+        if (!(email && oldPassword && newPassword)) throw Error("Please provide all required fields.");
+
+        await userService.updatePassword({ email, oldPassword, newPassword });
+        res.status(200).json({ email, passwordChanged: true });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await userService.getAllUsers();
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
+exports.getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) throw Error("User ID is required.");
+
+        const user = await userService.getUserById(id);
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
