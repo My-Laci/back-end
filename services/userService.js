@@ -1,5 +1,7 @@
 const User = require("../models/user");
 const { sendOTP, verifyOTP, deleteOTP } = require("./otpService");
+const bcrypt = require("bcrypt")
+
 
 exports.sendPasswordResetOTP = async (email) => {
     try {
@@ -20,5 +22,26 @@ exports.sendPasswordResetOTP = async (email) => {
     } catch (error) {
         throw error;
     }
+};
 
-}
+exports.resetPassword = async ({ email, otp, newPassword }) => {
+    try {
+        const validOTP = await verifyOTP({ email, otp });
+        if (!validOTP) {
+            throw Error("Invalid code.")
+        }
+
+        if (newPassword.length < 8) {
+            throw Error("Password is too short!");
+        }
+
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        await User.updateOne({ email }, { password: hashedNewPassword });
+        await deleteOTP(email);
+
+        return;
+    } catch (error) {
+        throw error;
+
+    }
+};
