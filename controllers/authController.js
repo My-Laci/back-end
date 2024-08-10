@@ -88,3 +88,24 @@ exports.verifySignUpOTP = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+exports.signout = async (req, res) => {
+    try {
+        // Asumsikan token disimpan di header Authorization: "Bearer <token>"
+        const token = req.body.token || req.query.token || req.headers["x-access-token"] || (req.headers["authorization"] && req.headers["authorization"].split(" ")[1]);;
+        if (!token) throw Error("Token missing or invalid");
+
+        // Cari pengguna berdasarkan token yang ada
+        console.log(token);
+        const user = await User.findOne({ token });
+        if (!user) throw Error("User not found or already logged out");
+
+        // Hapus token dari pengguna untuk logout
+        user.token = null;
+        await user.save();
+
+        res.status(200).json({ status: true, message: "Successfully logged out" });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
