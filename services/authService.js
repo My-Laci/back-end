@@ -57,6 +57,7 @@ exports.signIn = async (data) => {
             //create user token
             const generatedToken = createToken(fetchedUser);
             fetchedUser.token = generatedToken;
+            await fetchedUser.save();
 
             // Return user data without the password
             const { password, ...userWithoutPassword } = fetchedUser._doc;

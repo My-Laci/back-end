@@ -45,3 +45,17 @@ exports.resetPassword = async ({ email, otp, newPassword }) => {
 
     }
 };
+
+exports.updateFullName = async (email, newFullName) => {
+    try {
+        const existingUser = await User.findOne({ email });
+        if (!existingUser) {
+            throw Error("There is no account existed with the provided email");
+        }
+
+        await User.updateOne({ email }, { name: newFullName });
+        return;
+    } catch (error) {
+        throw error;
+    }
+};

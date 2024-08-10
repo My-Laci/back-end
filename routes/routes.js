@@ -24,8 +24,10 @@ router.get("/private-test", authMiddleware.verifyToken, (req, res) => {
 router.post("/signup", authController.signUp);
 router.post("/verifySignup", authController.verifySignUpOTP);
 router.post("/signin", authController.signIn);
+router.post("/signout", authController.signout);
 
 // User's routes
+router.post("/updateFullName", userController.updateFullName);
 router.post("/requestResetPassword", userController.forgotPassword);
 router.post("/resetPassword", userController.updatePassword);
 

@@ -1,5 +1,16 @@
-const bcrypt = require("bcrypt")
 const userService = require("../services/userService");
+
+exports.updateFullName = async (req, res) => {
+    try {
+        const { email, newFullName } = req.body;
+        if (!email || !newFullName) throw Error("Please provide the new full name.");
+
+        await userService.updateFullName(email, newFullName);
+        res.status(200).json({ email, fullNameChanged: true });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
 
 exports.forgotPassword = async (req, res) => {
     try {
