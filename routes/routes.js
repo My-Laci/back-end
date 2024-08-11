@@ -5,6 +5,7 @@ const userController = require("../controllers/userController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/upload");
 const articleController = require("../controllers/articleController");
+const voucherController = require("../controllers/voucherController");
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -37,6 +38,7 @@ router.post("/updatePassword", userController.updatePassword);
 router.post("/sendOTP", otpController.sendOTP);
 router.post("/verifyOTP", otpController.verifyOTP);
 
+// Article's routes
 router.post(
   "/articles",
   authMiddleware.verifyToken,
@@ -51,6 +53,16 @@ router.put(
   authMiddleware.verifyToken,
   upload.upload,
   articleController.updateArticle
+);
+
+// Voucher's routes
+router.post("/vouchers/create", voucherController.createVoucherBatch); // Admin route
+router.get("/vouchers", voucherController.getAllVouchers); // Admin route
+router.post("/vouchers/validate", voucherController.validateVoucher);
+router.get("/vouchers/user/:userId", voucherController.getVouchersByUser);
+router.delete(
+  "/vouchers/batch/:batchName",
+  voucherController.deleteVoucherBatch
 );
 
 module.exports = router;
