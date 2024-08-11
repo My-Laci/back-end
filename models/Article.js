@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { buffer } = require("stream/consumers");
 
 const ArticleSchema = new mongoose.Schema(
   {
@@ -15,7 +16,7 @@ const ArticleSchema = new mongoose.Schema(
       ref: "User",
     },
     imageFilename: {
-      type: String, // Store the filename of the image in GridFS
+      type: buffer, // Store the filename of the image in GridFS
       required: false,
     },
   },
