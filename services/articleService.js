@@ -11,11 +11,8 @@ const getArticleById = async (id) => {
 };
 
 // Get articles by user
-const getArticlesByUser = async (userId) => {
-  return await Article.find({ author: userId }).populate(
-    "author",
-    "name email"
-  );
+const getArticlesByUser = async (_id) => {
+  return await Article.find({ author: _id }).populate("author", "name email");
 };
 
 // Create new article
@@ -33,9 +30,19 @@ const updateArticle = async (id, articleData) => {
 
   article.title = articleData.title || article.title;
   article.content = articleData.content || article.content;
-  article.imageFilename = articleData.imageFilename || article.imageFilename;
+  article.images =
+    articleData.images.length > 0 ? articleData.images : article.images;
 
   return await article.save();
+};
+
+// Delete article by ID
+const deleteArticle = async (id) => {
+  const article = await Article.findById(id);
+  if (!article) {
+    throw new Error("Article not found");
+  }
+  await article.remove();
 };
 
 module.exports = {
@@ -44,4 +51,5 @@ module.exports = {
   getArticlesByUser,
   createArticle,
   updateArticle,
+  deleteArticle,
 };

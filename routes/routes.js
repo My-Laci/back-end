@@ -45,7 +45,7 @@ router.post("/verifyOTP", otpController.verifyOTP);
 router.post(
   "/articles",
   authMiddleware.verifyToken,
-  upload.upload,
+  upload.upload, // No need to change this; it now handles multiple images
   articleController.createArticle
 );
 router.get("/articles", articleController.getAllArticles);
@@ -54,8 +54,13 @@ router.get("/articles/user/:userId", articleController.getArticlesByUser);
 router.put(
   "/articles/:id",
   authMiddleware.verifyToken,
-  upload.upload,
+  upload.upload, // Same here for updating articles
   articleController.updateArticle
+);
+router.delete(
+  "/articles/:id",
+  authMiddleware.verifyToken,
+  articleController.deleteArticle
 );
 
 // Voucher's routes
