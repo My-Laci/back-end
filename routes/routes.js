@@ -2,6 +2,7 @@ const express = require("express");
 const authController = require("../controllers/authController");
 const otpController = require("../controllers/otpController");
 const userController = require("../controllers/userController");
+const emailController = require("../controllers/emailController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const upload = require("../middlewares/upload");
 const articleController = require("../controllers/articleController");
@@ -33,6 +34,8 @@ router.post("/updateFullName", userController.updateFullName);
 router.post("/requestResetPassword", userController.forgotPassword);
 router.post("/resetPassword", userController.resetPassword);
 router.post("/updatePassword", userController.updatePassword);
+router.post("/sendEmailVerification", emailController.sendVerificationOTP);
+router.post("/verifyEmail", emailController.verifyOTP);
 
 // OTP's routes
 router.post("/sendOTP", otpController.sendOTP);

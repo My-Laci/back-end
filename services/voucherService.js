@@ -16,19 +16,18 @@ exports.createVoucherBatch = async (batchName, quantity) => {
   return vouchers;
 };
 
-exports.validateVoucher = async (code) => {
-  const voucher = await Voucher.findOne({ code, isActive: true });
+// exports.validateVoucher = async (code) => {
+//   const voucher = await Voucher.findOne({ code, isActive: true });
 
-  if (!voucher) {
-    throw new Error("Invalid or inactive voucher.");
-    return voucher;
-  }
+//   if (!voucher) {
+//     throw new Error("Invalid or inactive voucher.");
+//   }
 
-  voucher.isActive = false;
-  await voucher.save();
+//   voucher.isActive = false;
+//   await voucher.save();
 
-  return voucher;
-};
+//   return voucher;
+// };
 
 exports.getVouchersByUser = async (userId) => {
   // Assuming a user field is added in the Voucher model when it's used.
