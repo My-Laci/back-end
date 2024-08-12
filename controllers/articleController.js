@@ -164,17 +164,12 @@ exports.updateArticle = async (req, res) => {
   try {
     const { title, content } = req.body;
 
-    const images = req.files.map((file) => ({
-      data: file.buffer,
-      contentType: file.mimetype,
-    }));
-
+    // Find the article without updating the images
     const article = await Article.findByIdAndUpdate(
       req.params.id,
       {
         title,
         content,
-        images,
       },
       { new: true }
     );
@@ -188,9 +183,6 @@ exports.updateArticle = async (req, res) => {
       title: article.title,
       content: article.content,
       author: article.author,
-      images: article.images.map((image) => ({
-        contentType: image.contentType,
-      })),
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
     };

@@ -30,8 +30,6 @@ const updateArticle = async (id, articleData) => {
 
   article.title = articleData.title || article.title;
   article.content = articleData.content || article.content;
-  article.images =
-    articleData.images.length > 0 ? articleData.images : article.images;
 
   return await article.save();
 };
