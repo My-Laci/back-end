@@ -91,6 +91,21 @@ exports.updateFullName = async (email, newFullName) => {
     }
 };
 
+exports.updateEmail = async (email, newEmail) => {
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw Error("There is no account existed with the provided email");
+        }
+
+        user.email = newEmail;
+        await user.save();
+        return;
+    } catch (error) {
+        throw error;
+    }
+};
+
 exports.getAllUsers = async () => {
     try {
         return await User.find({});
