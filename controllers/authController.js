@@ -1,17 +1,17 @@
 const authService = require('../services/authService');
 const emailVerifController = require('./emailController');
 const emailVerifService = require("../services/emailService");
-const TempUser = require('../models/tempUser');
+const Voucher = require("../models/Voucher");
 const User = require('../models/user');
 
 exports.signUp = async (req, res) => {
     try {
-        let { name, email, password } = req.body;
+        let { name, email, password, code } = req.body;
         name = name.trim();
         email = email.trim();
         password = password.trim();
 
-        if (!(name && email && password)) {
+        if (!(name && email && password && code)) {
             throw Error("Empty input fields!");
         } else if (!/^[a-zA-Z ]*$/.test(name)) {
             throw Error("Invalid name entered");
@@ -21,8 +21,21 @@ exports.signUp = async (req, res) => {
             throw Error("Password is too short!");
         }
 
+        // Check for Voucher
+        const voucherCode = await Voucher.findOne({ code, isActive: true });
+        if (!voucherCode) {
+            throw new Error("Invalid or inactive voucher.");
+        }
+
+
+
+
         await authService.signUp({ name, email, password });
-        await emailVerifController.sendVerificationOTPSignUp(email);
+        await emailVerifService.sendVerificationOTP(email);
+
+        // Update status voucher
+        voucherCode.isActive = false;
+        await voucherCode.save();
 
         res.status(200).json({
             status: true,

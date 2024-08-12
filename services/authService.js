@@ -16,24 +16,23 @@ exports.signUp = async (data) => {
 
         // Check existing users
         const existingUser = await User.findOne({ email });
-        const existingTempUser = await TempUser.findOne({ email });
 
-        if (existingUser || existingTempUser) {
+        if (existingUser) {
             throw Error("Email sudah terpakai");
         }
         //Hash Password 
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create new temporary user
-        const newTempUser = new TempUser({
+        const newUser = new User({
             name,
             email,
             password: hashedPassword,
         });
-        await newTempUser.save();
+        await newUser.save();
 
         // Return the new user without the password
-        return { id: newTempUser._id, name: newTempUser.name, email: newTempUser.email }
+        return { id: newUser._id, name: newUser.name, email: newUser.email }
     } catch (error) {
         throw error;
     }
@@ -72,29 +71,29 @@ exports.signIn = async (data) => {
     }
 }
 
-exports.completeSignUp = async (email) => {
-    try {
-        // Retrieve temporary user data
-        const tempUser = await TempUser.findOne({ email });
+// exports.completeSignUp = async (email) => {
+//     try {
+//         // Retrieve temporary user data
+//         const tempUser = await TempUser.findOne({ email });
 
-        if (!tempUser) {
-            throw Error("Temporary user not found. Please sign up again.");
-        }
+//         if (!tempUser) {
+//             throw Error("Temporary user not found. Please sign up again.");
+//         }
 
-        // Create the permanent user in the `users` collection
-        const newUser = new User({
-            name: tempUser.name,
-            email: tempUser.email,
-            password: tempUser.password,
-        });
-        await newUser.save();
+//         // Create the permanent user in the `users` collection
+//         const newUser = new User({
+//             name: tempUser.name,
+//             email: tempUser.email,
+//             password: tempUser.password,
+//         });
+//         await newUser.save();
 
-        // Delete the temporary user
-        await TempUser.deleteOne({ email });
+//         // Delete the temporary user
+//         await TempUser.deleteOne({ email });
 
-        // Return the new user without the password
-        return { id: newUser._id, name: newUser.name, email: newUser.email };
-    } catch (error) {
-        throw error;
-    }
-};
+//         // Return the new user without the password
+//         return { id: newUser._id, name: newUser.name, email: newUser.email };
+//     } catch (error) {
+//         throw error;
+//     }
+// };
