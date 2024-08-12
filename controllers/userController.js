@@ -12,6 +12,28 @@ exports.updateFullName = async (req, res) => {
     }
 };
 
+exports.updateEmail = async (req, res) => {
+    try {
+        const { email, newEmail } = req.body;
+
+        if (!(email && newEmail)) {
+            throw Error("Both old and new email addresses are required.");
+        } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(newEmail)) {
+            throw Error("Invalid new email entered.");
+        }
+
+        await userService.updateEmail(email, newEmail);
+
+        res.status(200).json({
+            status: true,
+            message: "Email updated successfully.",
+            data: { email: email, newEmail: newEmail, emailChanged: true },
+        });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
 exports.forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
