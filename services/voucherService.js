@@ -21,6 +21,7 @@ exports.validateVoucher = async (code) => {
 
   if (!voucher) {
     throw new Error("Invalid or inactive voucher.");
+    return voucher;
   }
 
   voucher.isActive = false;
