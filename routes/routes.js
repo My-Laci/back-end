@@ -31,6 +31,7 @@ router.get("/users", userController.getAllUsers);
 
 // User's routes
 router.post("/updateFullName", userController.updateFullName);
+router.post("/updateEmail", userController.updateEmail);
 router.post("/requestResetPassword", userController.forgotPassword);
 router.post("/resetPassword", userController.resetPassword);
 router.post("/updatePassword", userController.updatePassword);
