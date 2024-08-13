@@ -183,6 +183,9 @@ exports.updateArticle = async (req, res) => {
       title: article.title,
       content: article.content,
       author: article.author,
+      images: article.images.map((image) => ({
+        contentType: image.contentType,
+      })),
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
     };
