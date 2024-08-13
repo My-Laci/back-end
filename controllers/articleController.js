@@ -35,6 +35,7 @@ exports.getArticlesByUser = async (req, res) => {
 exports.createArticle = async (req, res) => {
   console.log("inside article");
   const { title, content } = req.body;
+
   const articleData = {
     title,
     content,
@@ -66,5 +67,18 @@ exports.updateArticle = async (req, res) => {
     res.status(200).json(updatedArticle);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+};
+
+exports.deleteArticle = async (req, res) => {
+  const articleId = req.params.id;
+
+  try {
+    const deleteArticle = articleService.deleteArticle(
+      articleId,
+    )
+    res.status(200).json({message: "Article succesfully deleted"})
+  } catch (error) {
+    res.status(404).json({message: "Article not found"})
   }
 };

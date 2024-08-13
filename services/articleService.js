@@ -38,10 +38,20 @@ const updateArticle = async (id, articleData) => {
   return await article.save();
 };
 
+const deleteArticle = async (id) => {
+  const deleteArticle = Article.findByIdAndDelete(id);
+  if (!deleteArticle) {
+    throw new Error ("Article not found")
+  }
+
+  return
+};
+
 module.exports = {
   getAllArticles,
   getArticleById,
   getArticlesByUser,
   createArticle,
   updateArticle,
+  deleteArticle,
 };
