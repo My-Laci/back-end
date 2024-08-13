@@ -1,8 +1,7 @@
 const multer = require("multer");
 const path = require("path");
-const crypto = require("crypto");
 
-// Simple storage setup for multer without GridFS
+// Simple storage setup for multer
 const storage = multer.memoryStorage();
 
 const checkFileType = (file, cb) => {
