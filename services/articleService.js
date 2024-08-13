@@ -34,13 +34,13 @@ const updateArticle = async (id, articleData) => {
   return await article.save();
 };
 
-// Delete article by ID
 const deleteArticle = async (id) => {
-  const article = await Article.findById(id);
-  if (!article) {
-    throw new Error("Article not found");
+  const deleteArticle = Article.findByIdAndDelete(id);
+  if (!deleteArticle) {
+    throw new Error ("Article not found")
   }
-  await article.remove();
+
+  return
 };
 
 module.exports = {
