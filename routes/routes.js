@@ -40,10 +40,6 @@ router.post("/users/resetPassword", userController.resetPassword);
 router.post("/users/:id/sendEmailVerification", emailController.sendVerificationOTP);
 router.post("/users/:id/verifyEmail", emailController.verifyOTP);
 
-// OTP's routes
-router.post("/sendOTP", otpController.sendOTP);
-router.post("/verifyOTP", otpController.verifyOTP);
-
 // Article's routes
 router.post(
   "/articles",
