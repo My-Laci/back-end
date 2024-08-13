@@ -1,12 +1,14 @@
+const multer = require("multer");
 const express = require("express");
+const upload = multer();
 const authController = require("../controllers/authController");
 const otpController = require("../controllers/otpController");
 const userController = require("../controllers/userController");
 const emailController = require("../controllers/emailController");
 const authMiddleware = require("../middlewares/authMiddleware");
-const upload = require("../middlewares/upload");
 const articleController = require("../controllers/articleController");
 const voucherController = require("../controllers/voucherController");
+const postController = require("../controllers/postController");
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -46,22 +48,32 @@ router.post("/verifyOTP", otpController.verifyOTP);
 router.post(
   "/articles",
   authMiddleware.verifyToken,
-  upload.upload, // No need to change this; it now handles multiple images
   articleController.createArticle
 );
 router.get("/articles", articleController.getAllArticles);
 router.get("/articles/:id", articleController.getArticleById);
 router.get("/articles/user/:userId", articleController.getArticlesByUser);
-router.put(
-  "/articles/:id",
+// router.put(
+//   "/articles/:id",
+//   authMiddleware.verifyToken,
+//   articleController.updateArticle
+// );
+router.delete("/ARTICLES/:id", articleController.deleteArticle);
+
+// Post's routers
+router.post(
+  "/post",
+  upload.single("imageContent"),
   authMiddleware.verifyToken,
-  upload.upload, // Same here for updating articles
-  articleController.updateArticle
+  postController.createPost
 );
-router.delete(
-  "/articles/:id",
+router.put("/post/:id", authMiddleware.verifyToken, postController.updatePost);
+router.get("/post/:id", authMiddleware.verifyToken, postController.getUserPost);
+router.get("/post/all", authMiddleware.verifyToken, postController.getAllPost);
+router.get(
+  "/post/detail/:id",
   authMiddleware.verifyToken,
-  articleController.deleteArticle
+  postController.getPostDetail
 );
 
 // Voucher's routes

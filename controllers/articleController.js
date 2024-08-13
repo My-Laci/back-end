@@ -159,6 +159,27 @@ exports.getArticlesByUser = async (req, res) => {
   }
 };
 
+// Create new article
+exports.createArticle = async (req, res) => {
+  console.log("inside article");
+  const { title, content } = req.body;
+  const articleData = {
+    title,
+    content,
+    author: req.currentUser.payload.id,
+    imageFilename: req.file ? req.file.filename : "",
+  };
+
+  try {
+    const newArticle = await articleService.createArticle(articleData);
+    res.status(201).json(newArticle);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+
 // Update an article by ID
 exports.updateArticle = async (req, res) => {
   try {
@@ -196,17 +217,15 @@ exports.updateArticle = async (req, res) => {
   }
 };
 
-// Delete an article by ID
 exports.deleteArticle = async (req, res) => {
+  const articleId = req.params.id;
+
   try {
-    const article = await Article.findByIdAndDelete(req.params.id);
-
-    if (!article) {
-      return res.status(404).json({ message: "Article not found" });
-    }
-
-    res.status(200).json({ message: "Article deleted successfully" });
+    const deleteArticle = articleService.deleteArticle(
+      articleId,
+    )
+    res.status(200).json({message: "Article succesfully deleted"})
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(404).json({message: "Article not found"})
   }
 };
