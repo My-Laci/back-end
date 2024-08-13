@@ -53,11 +53,11 @@ router.post(
 router.get("/articles", articleController.getAllArticles);
 router.get("/articles/:id", articleController.getArticleById);
 router.get("/articles/user/:userId", articleController.getArticlesByUser);
-router.put(
-  "/articles/:id",
-  authMiddleware.verifyToken,
-  articleController.updateArticle
-);
+// router.put(
+//   "/articles/:id",
+//   authMiddleware.verifyToken,
+//   articleController.updateArticle
+// );
 router.delete("/ARTICLES/:id", articleController.deleteArticle);
 
 // Post's routers
