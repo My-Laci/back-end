@@ -2,7 +2,6 @@ const multer = require("multer");
 const express = require("express");
 const upload = multer();
 const authController = require("../controllers/authController");
-const otpController = require("../controllers/otpController");
 const userController = require("../controllers/userController");
 const emailController = require("../controllers/emailController");
 const authMiddleware = require("../middlewares/authMiddleware");
