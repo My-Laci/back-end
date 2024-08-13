@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const TempUser = require('../models/tempUser');
 const jwt = require("jsonwebtoken");
 
 const { TOKEN_KEY, TOKEN_EXPIRY } = process.env;

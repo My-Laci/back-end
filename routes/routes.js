@@ -2,7 +2,6 @@ const multer = require("multer");
 const express = require("express");
 const upload = multer();
 const authController = require("../controllers/authController");
-const otpController = require("../controllers/otpController");
 const userController = require("../controllers/userController");
 const emailController = require("../controllers/emailController");
 const authMiddleware = require("../middlewares/authMiddleware");
@@ -26,23 +25,19 @@ router.get("/private-test", authMiddleware.verifyToken, (req, res) => {
     );
 });
 router.post("/signup", authController.signUp);
-router.post("/verifySignup", authController.verifySignUpOTP);
 router.post("/signin", authController.signIn);
 router.post("/signout", authController.signout);
-router.get("/users", userController.getAllUsers);
 
 // User's routes
-router.post("/updateFullName", userController.updateFullName);
-router.post("/updateEmail", userController.updateEmail);
-router.post("/requestResetPassword", userController.forgotPassword);
-router.post("/resetPassword", userController.resetPassword);
-router.post("/updatePassword", userController.updatePassword);
-router.post("/sendEmailVerification", emailController.sendVerificationOTP);
-router.post("/verifyEmail", emailController.verifyOTP);
-
-// OTP's routes
-router.post("/sendOTP", otpController.sendOTP);
-router.post("/verifyOTP", otpController.verifyOTP);
+router.get("/users", userController.getAllUsers);
+router.get("/users/:id", userController.getUserById);
+router.post("/users/:id/updateFullName", userController.updateFullName);
+router.post("/users/:id/updateEmail", userController.updateEmail);
+router.post("/users/:id/updatePassword", userController.updatePassword);
+router.post("/users/requestResetPassword", userController.forgotPassword);
+router.post("/users/resetPassword", userController.resetPassword);
+router.post("/users/:id/sendEmailVerification", emailController.sendVerificationOTP);
+router.post("/users/:id/verifyEmail", emailController.verifyOTP);
 
 // Article's routes
 router.post(
