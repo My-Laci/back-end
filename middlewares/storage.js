@@ -19,7 +19,12 @@ function getImgUrl(filename) {
 
 exports.uploadProfileImgToCloudStorage = (req, res, next) => {
 
-    if (!req.file) return next()
+    if (!req.file) {
+        res.status(400).json({
+            status: false,
+            message: "Please upload an image.",
+        });
+    };
 
     const uploadedFileName = `usersProfileImage/${nanoid(8)}`;
     const uploadedFile = bucket.file(uploadedFileName)
@@ -38,11 +43,36 @@ exports.uploadProfileImgToCloudStorage = (req, res, next) => {
     stream.on('finish', () => {
         req.file.cloudStorageObject = uploadedFileName
         req.file.cloudStoragePublicUrl = getImgUrl(uploadedFileName)
-        console.log(req.file.cloudStoragePublicUrl);
+        next()
+    })
+
+    stream.end(req.file.buffer)
+}
+
+exports.uploadArticleImgToCloudStorage = (req, res, next) => {
+
+    if (!req.file) return next()
+
+    const uploadedFileName = `articleImage/${nanoid(8)}`;
+    const uploadedFile = bucket.file(uploadedFileName)
+
+    const stream = uploadedFile.createWriteStream({
+        metadata: {
+            contentType: req.file.mimetype
+        }
+    })
+
+    stream.on('error', (err) => {
+        req.file.cloudStorageError = err
+        next(err)
+    })
+
+    stream.on('finish', () => {
+        req.file.cloudStorageObject = uploadedFileName
+        req.file.cloudStoragePublicUrl = getImgUrl(uploadedFileName)
         next()
         // res.send(req.file.cloudStoragePublicUrl)
     })
 
     stream.end(req.file.buffer)
-    // console.log(req.file.cloudStoragePublicUrl);
 }
