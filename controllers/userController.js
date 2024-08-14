@@ -1,4 +1,21 @@
 const userService = require("../services/userService");
+const multer = require('multer');
+const { GridFsStorage } = require('multer-gridfs-storage');
+require("dotenv").config();
+
+const { DATABASE_URL } = process.env;
+
+const storage = new GridFsStorage({
+    url: DATABASE_URL,
+    file: (req, file) => {
+        return {
+            filename: `profile_${Date.now()}_${file.originalname}`,  // Unique filename
+            bucketName: 'userProfileImages',  // Bucket name for GridFS
+        };
+    },
+});
+
+const uploadUserImage = multer({ storage });
 
 exports.getAllUsers = async (req, res) => {
     try {
@@ -94,3 +111,31 @@ exports.resetPassword = async (req, res) => {
         res.status(400).send(error.message);
     }
 }
+
+exports.updateProfileImage = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!req.file) throw Error("No image file uploaded");
+
+        // Call service to update profile image
+        const updatedUser = await userService.updateProfileImage(id, req.file.filename);
+        res.status(200).json({ status: true, message: "Profile image updated successfully", updatedUser });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
+// Controller method to handle profile image retrieval
+exports.getProfileImage = async (req, res) => {
+    try {
+        const filename = req.params.id;
+
+        // Call service to retrieve profile image
+        await userService.getProfileImage(filename, res);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
+exports = uploadUserImage;

@@ -1,6 +1,16 @@
 const User = require("../models/user");
 const { sendOTP, verifyOTP, deleteOTP } = require("./otpService");
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
+const mongoose = require('mongoose');
+const Grid = require('gridfs-stream');
+
+
+let gfs;
+const conn = mongoose.connection;
+conn.once('open', () => {
+    gfs = Grid(conn.db, mongoose.mongo);
+    gfs.collection('userProfileImages');
+});
 
 exports.getAllUsers = async () => {
     try {
@@ -125,5 +135,48 @@ exports.resetPassword = async ({ email, otp, newPassword }) => {
     } catch (error) {
         throw error;
 
+    }
+};
+
+exports.updateProfileImage = async (id, filename) => {
+    try {
+        const _id = id;
+        const user = await User.findById(_id);
+        if (!user) {
+            throw Error("User not found");
+        }
+
+        // Store the filename in the user document
+        user.profileImage = filename;
+        await user.save();
+
+        return user;
+    } catch (error) {
+        throw error;
+    }
+};
+
+exports.getProfileImage = async (id, res) => {
+    try {
+        const _$id = id;
+        gfs.files.findOne({ _id }, (err, file) => {
+            if (!file || file.length === 0) {
+                return res.status(404).json({
+                    err: 'No file exists',
+                });
+            }
+
+            // Check if the file is an image
+            if (file.contentType === 'image/jpeg' || file.contentType === 'image/jpg' || file.contentType === 'image/png') {
+                const readStream = gfs.createReadStream(file.filename);
+                readStream.pipe(res);
+            } else {
+                res.status(404).json({
+                    err: 'Not an image',
+                });
+            }
+        });
+    } catch (error) {
+        throw error;
     }
 };

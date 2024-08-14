@@ -3,6 +3,7 @@ const express = require("express");
 const upload = multer();
 const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
+const uploadUserImage = multer();
 const emailController = require("../controllers/emailController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const articleController = require("../controllers/articleController");
@@ -38,6 +39,8 @@ router.post("/users/requestResetPassword", userController.forgotPassword);
 router.post("/users/resetPassword", userController.resetPassword);
 router.post("/users/:id/sendEmailVerification", emailController.sendVerificationOTP);
 router.post("/users/:id/verifyEmail", emailController.verifyOTP);
+router.post('/users/:id/profile-image', uploadUserImage.single('profileImage'), userController.updateProfileImage);
+router.get('/users/profile-image/:filename', userController.getProfileImage);
 
 // Article's routes
 router.post(
