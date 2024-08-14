@@ -141,41 +141,14 @@ exports.resetPassword = async ({ email, otp, newPassword }) => {
 exports.updateProfileImage = async (id, filename) => {
     try {
         const _id = id;
-        const user = await User.findById(_id);
-        if (!user) {
-            throw Error("User not found");
+        const existingUser = await User.findOne({ _id });
+        if (!existingUser) {
+            throw Error("Account not existed");
         }
+        console.log(filename);
 
-        // Store the filename in the user document
-        user.profileImage = filename;
-        await user.save();
-
-        return user;
-    } catch (error) {
-        throw error;
-    }
-};
-
-exports.getProfileImage = async (id, res) => {
-    try {
-        const _$id = id;
-        gfs.files.findOne({ _id }, (err, file) => {
-            if (!file || file.length === 0) {
-                return res.status(404).json({
-                    err: 'No file exists',
-                });
-            }
-
-            // Check if the file is an image
-            if (file.contentType === 'image/jpeg' || file.contentType === 'image/jpg' || file.contentType === 'image/png') {
-                const readStream = gfs.createReadStream(file.filename);
-                readStream.pipe(res);
-            } else {
-                res.status(404).json({
-                    err: 'Not an image',
-                });
-            }
-        });
+        await User.updateOne({ _id }, { profileImg: filename });
+        return;
     } catch (error) {
         throw error;
     }

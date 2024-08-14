@@ -1,15 +1,22 @@
-const multer = require("multer");
+const Multer = require("multer");
 const express = require("express");
-const upload = multer();
 const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
-const uploadUserImage = multer();
 const emailController = require("../controllers/emailController");
 const authMiddleware = require("../middlewares/authMiddleware");
 const articleController = require("../controllers/articleController");
 const voucherController = require("../controllers/voucherController");
 const postController = require("../controllers/postController");
 const router = express.Router();
+const storage = require("../middlewares/storage");
+
+const multer = Multer({
+  storage: Multer.MemoryStorage,
+  fileSize: 10 * 1024 * 1024,
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+  },
+});
 
 router.get("/", (req, res) => {
   res.status(200).json({
@@ -39,15 +46,19 @@ router.post("/users/requestResetPassword", userController.forgotPassword);
 router.post("/users/resetPassword", userController.resetPassword);
 router.post("/users/:id/sendEmailVerification", emailController.sendVerificationOTP);
 router.post("/users/:id/verifyEmail", emailController.verifyOTP);
-router.post('/users/:id/profile-image', uploadUserImage.single('profileImage'), userController.updateProfileImage);
-router.get('/users/profile-image/:filename', userController.getProfileImage);
+router.post(
+  '/users/:id/profile-image',
+  multer.single('IMAGE'),
+  storage.uploadProfileImgToCloudStorage,
+  userController.updateProfileImage
+);
 
 // Article's routes
-router.post(
-  "/articles",
-  authMiddleware.verifyToken,
-  articleController.createArticle
-);
+// router.post(
+//   "/articles",
+//   authMiddleware.verifyToken,
+//   articleController.createArticle
+// );
 router.get("/articles", articleController.getAllArticles);
 router.get("/articles/:id", articleController.getArticleById);
 router.get("/articles/user/:userId", articleController.getArticlesByUser);
@@ -59,12 +70,12 @@ router.get("/articles/user/:userId", articleController.getArticlesByUser);
 router.delete("/ARTICLES/:id", articleController.deleteArticle);
 
 // Post's routers
-router.post(
-  "/post",
-  upload.single("imageContent"),
-  authMiddleware.verifyToken,
-  postController.createPost
-);
+// router.post(
+//   "/post",
+//   upload.single("imageContent"),
+//   authMiddleware.verifyToken,
+//   postController.createPost
+// );
 router.put("/post/:id", authMiddleware.verifyToken, postController.updatePost);
 router.get("/post/:id", authMiddleware.verifyToken, postController.getUserPost);
 router.get("/post/all", authMiddleware.verifyToken, postController.getAllPost);

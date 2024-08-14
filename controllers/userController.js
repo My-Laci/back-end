@@ -5,7 +5,7 @@ require("dotenv").config();
 
 const { DATABASE_URL } = process.env;
 
-const storage = new GridFsStorage({
+const storageUserProfile = new GridFsStorage({
     url: DATABASE_URL,
     file: (req, file) => {
         return {
@@ -15,7 +15,9 @@ const storage = new GridFsStorage({
     },
 });
 
-const uploadUserImage = multer({ storage });
+const uploadUserProfile = multer({ storage: storageUserProfile });
+
+exports.uploadUserProfile = uploadUserProfile;
 
 exports.getAllUsers = async (req, res) => {
     try {
@@ -115,27 +117,12 @@ exports.resetPassword = async (req, res) => {
 exports.updateProfileImage = async (req, res) => {
     try {
         const { id } = req.params;
+        if (!req.file.cloudStoragePublicUrl) throw Error("Please upload a new image.");
 
-        if (!req.file) throw Error("No image file uploaded");
-
-        // Call service to update profile image
-        const updatedUser = await userService.updateProfileImage(id, req.file.filename);
-        res.status(200).json({ status: true, message: "Profile image updated successfully", updatedUser });
+        await userService.updateProfileImage(id, req.file.cloudStoragePublicUrl);
+        res.status(200).json({ id, profileUpdated: true });
     } catch (error) {
         res.status(400).send(error.message);
     }
 };
 
-// Controller method to handle profile image retrieval
-exports.getProfileImage = async (req, res) => {
-    try {
-        const filename = req.params.id;
-
-        // Call service to retrieve profile image
-        await userService.getProfileImage(filename, res);
-    } catch (error) {
-        res.status(400).send(error.message);
-    }
-};
-
-exports = uploadUserImage;
