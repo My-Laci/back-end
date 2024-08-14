@@ -1,10 +1,9 @@
-const User = require("../models/user");
+const User = require("../models/User");
 const { sendOTP, verifyOTP, deleteOTP } = require("./otpService");
 
-exports.sendVerificationOTP = async (id) => {
+exports.sendVerificationOTP = async (email) => {
     try {
-        const _id = id;
-        const existingUser = await User.findOne({ _id });
+        const existingUser = await User.findOne({ email });
 
         if (!existingUser) {
             throw Error("There's no account for the provided email.")
@@ -36,6 +35,7 @@ exports.verifyOTP = async ({ id, otp }) => {
             throw Error("There's no account for the provided email.")
         }
 
+        console.log(existingUser.email);
         const validOTP = await verifyOTP({ email: existingUser.email, otp });
         if (!validOTP) {
             throw Error("Invalid code provided.")

@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const User = require('../models/user');
+const User = require('../models/User');
 const jwt = require("jsonwebtoken");
 
 const { TOKEN_KEY, TOKEN_EXPIRY } = process.env;
@@ -27,6 +27,7 @@ exports.signUp = async (data) => {
             name,
             email,
             password: hashedPassword,
+            profileImg: "https://storage.googleapis.com/laci-development/usersProfileImage/defaultprofile.jpg"
         });
         await newUser.save();
 
@@ -69,30 +70,3 @@ exports.signIn = async (data) => {
         throw error;
     }
 }
-
-// exports.completeSignUp = async (email) => {
-//     try {
-//         // Retrieve temporary user data
-//         const tempUser = await TempUser.findOne({ email });
-
-//         if (!tempUser) {
-//             throw Error("Temporary user not found. Please sign up again.");
-//         }
-
-//         // Create the permanent user in the `users` collection
-//         const newUser = new User({
-//             name: tempUser.name,
-//             email: tempUser.email,
-//             password: tempUser.password,
-//         });
-//         await newUser.save();
-
-//         // Delete the temporary user
-//         await TempUser.deleteOne({ email });
-
-//         // Return the new user without the password
-//         return { id: newUser._id, name: newUser.name, email: newUser.email };
-//     } catch (error) {
-//         throw error;
-//     }
-// };

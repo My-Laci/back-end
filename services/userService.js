@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const User = require("../models/User");
 const { sendOTP, verifyOTP, deleteOTP } = require("./otpService");
 const bcrypt = require("bcrypt");
 const mongoose = require('mongoose');
@@ -22,7 +22,7 @@ exports.getAllUsers = async () => {
 
 exports.getUserById = async (_id) => {
     try {
-        const user = await User.findById(_id);
+        const user = await User.findOne({ _id });
         if (!user) {
             throw Error("User not found");
         }

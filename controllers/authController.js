@@ -2,7 +2,7 @@ const authService = require('../services/authService');
 const emailVerifController = require('./emailController');
 const emailVerifService = require("../services/emailService");
 const Voucher = require("../models/Voucher");
-const User = require('../models/user');
+const User = require('../models/User');
 
 exports.signUp = async (req, res) => {
     try {
@@ -24,14 +24,16 @@ exports.signUp = async (req, res) => {
         // Check for Voucher
         const voucherCode = await Voucher.findOne({ code, isActive: true });
         if (!voucherCode) {
-            throw new Error("Invalid or inactive voucher.");
+            res.status(400).json({ message: "Invalid or inactive voucher" });
         }
 
 
 
 
         await authService.signUp({ name, email, password });
+        console.log("a");
         await emailVerifService.sendVerificationOTP(email);
+        console.log("b");
 
         // Update status voucher
         voucherCode.isActive = false;
