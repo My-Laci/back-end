@@ -1,6 +1,16 @@
-const User = require("../models/user");
+const User = require("../models/User");
 const { sendOTP, verifyOTP, deleteOTP } = require("./otpService");
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
+const mongoose = require('mongoose');
+const Grid = require('gridfs-stream');
+
+
+let gfs;
+const conn = mongoose.connection;
+conn.once('open', () => {
+    gfs = Grid(conn.db, mongoose.mongo);
+    gfs.collection('userProfileImages');
+});
 
 exports.getAllUsers = async () => {
     try {
@@ -12,7 +22,7 @@ exports.getAllUsers = async () => {
 
 exports.getUserById = async (_id) => {
     try {
-        const user = await User.findById(_id);
+        const user = await User.findOne({ _id });
         if (!user) {
             throw Error("User not found");
         }
@@ -125,5 +135,21 @@ exports.resetPassword = async ({ email, otp, newPassword }) => {
     } catch (error) {
         throw error;
 
+    }
+};
+
+exports.updateProfileImage = async (id, filename) => {
+    try {
+        const _id = id;
+        const existingUser = await User.findOne({ _id });
+        if (!existingUser) {
+            throw Error("Account not existed");
+        }
+        console.log(filename);
+
+        await User.updateOne({ _id }, { profileImg: filename });
+        return;
+    } catch (error) {
+        throw error;
     }
 };

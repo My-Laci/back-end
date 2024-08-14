@@ -1,9 +1,12 @@
 const emailVerifService = require("../services/emailService");
+const User = require('../models/User');
 
 exports.sendVerificationOTP = async (req, res) => {
     try {
-        const { id } = req.params;
-        const createdEmailVerificationOTP = await emailVerifService.sendVerificationOTP(id);
+        const _id = req.params.id;
+        const existingUser = await User.findOne({ _id });
+
+        const createdEmailVerificationOTP = await emailVerifService.sendVerificationOTP(existingUser.email);
         res.status(200).json(createdEmailVerificationOTP);
     } catch (error) {
         res.status(400).send(error.message);

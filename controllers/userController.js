@@ -1,4 +1,23 @@
 const userService = require("../services/userService");
+const multer = require('multer');
+const { GridFsStorage } = require('multer-gridfs-storage');
+require("dotenv").config();
+
+const { DATABASE_URL } = process.env;
+
+const storageUserProfile = new GridFsStorage({
+    url: DATABASE_URL,
+    file: (req, file) => {
+        return {
+            filename: `profile_${Date.now()}_${file.originalname}`,  // Unique filename
+            bucketName: 'userProfileImages',  // Bucket name for GridFS
+        };
+    },
+});
+
+const uploadUserProfile = multer({ storage: storageUserProfile });
+
+exports.uploadUserProfile = uploadUserProfile;
 
 exports.getAllUsers = async (req, res) => {
     try {
@@ -94,3 +113,16 @@ exports.resetPassword = async (req, res) => {
         res.status(400).send(error.message);
     }
 }
+
+exports.updateProfileImage = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!req.file.cloudStoragePublicUrl) throw Error("Please upload a new image.");
+
+        await userService.updateProfileImage(id, req.file.cloudStoragePublicUrl);
+        res.status(200).json({ id, profileUpdated: true });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
