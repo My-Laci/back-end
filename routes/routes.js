@@ -1,6 +1,5 @@
 const multer = require("multer");
 const express = require("express");
-// const upload = multer();
 const authController = require("../controllers/authController");
 const otpController = require("../controllers/otpController");
 const userController = require("../controllers/userController");
@@ -52,18 +51,19 @@ router.post("/verifyOTP", otpController.verifyOTP);
 // Article's routes
 router.post(
   "/articles",
+  upload.single("articleImage"),
   authMiddleware.verifyToken,
   articleController.createArticle
 );
 router.get("/articles", articleController.getAllArticles);
 router.get("/articles/:id", articleController.getArticleById);
 router.get("/articles/user/:userId", articleController.getArticlesByUser);
-// router.put(
-//   "/articles/:id",
-//   authMiddleware.verifyToken,
-//   articleController.updateArticle
-// );
-router.delete("/ARTICLES/:id", articleController.deleteArticle);
+router.put(
+  "/articles/:id",
+  authMiddleware.verifyToken,
+  articleController.updateArticle
+);
+router.delete("/articles/:id", articleController.deleteArticle);
 
 // Post's routers
 router.post(
@@ -72,7 +72,12 @@ router.post(
   authMiddleware.verifyToken,
   postController.createPost
 );
-router.put("/post/:id", upload.array("imageContent"), authMiddleware.verifyToken, postController.updatePost);
+router.put(
+  "/post/:id",
+  upload.array("imageContent"),
+  authMiddleware.verifyToken,
+  postController.updatePost
+);
 router.get("/post/:id", authMiddleware.verifyToken, postController.getUserPost);
 router.get("/post/all", authMiddleware.verifyToken, postController.getAllPost);
 router.get(
