@@ -1,5 +1,10 @@
 const mongoose = require("mongoose");
 
+const ImageSchema = new mongoose.Schema({
+  data: Buffer, // This stores the binary data of the image
+  contentType: String, // This stores the MIME type of the image
+});
+
 const ArticleSchema = new mongoose.Schema(
   {
     title: {
@@ -15,12 +20,7 @@ const ArticleSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    images: [
-      {
-        type: String, // Store the filename(s) of the images
-        required: false,
-      },
-    ],
+    images: [ImageSchema], // Use the ImageSchema to define the structure of each image
   },
   { timestamps: true }
 );

@@ -3,6 +3,7 @@ const Article = require("../models/Article");
 // Create a new article
 exports.createArticle = async (req, res) => {
   try {
+    console.log('Files uploaded:', req.files);
     const { title, content } = req.body;
     const author = req.currentUser.payload.id;
 
@@ -159,35 +160,38 @@ exports.getArticlesByUser = async (req, res) => {
   }
 };
 
-// Create new article
-exports.createArticle = async (req, res) => {
-  console.log("inside article");
-  const { title, content } = req.body;
-  const articleData = {
-    title,
-    content,
-    author: req.currentUser.payload.id,
-    imageFilename: req.file ? req.file.filename : "",
-  };
-
+// Update an article by ID
+exports.updateArticle = async (req, res) => {
   try {
-    const newArticle = await articleService.createArticle(articleData);
-    res.status(201).json(newArticle);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    const { title, content } = req.body;
 
-// Delete an article by ID
-exports.deleteArticle = async (req, res) => {
-  try {
-    const article = await Article.findByIdAndDelete(req.params.id);
+    // Find the article without updating the images
+    const article = await Article.findByIdAndUpdate(
+      req.params.id,
+      {
+        title,
+        content,
+      },
+      { new: true }
+    );
 
     if (!article) {
       return res.status(404).json({ message: "Article not found" });
     }
 
-    res.status(200).json({ message: "Article deleted successfully" });
+    const modifiedArticle = {
+      _id: article._id,
+      title: article.title,
+      content: article.content,
+      author: article.author,
+      images: article.images.map((image) => ({
+        contentType: image.contentType,
+      })),
+      createdAt: article.createdAt,
+      updatedAt: article.updatedAt,
+    };
+
+    res.status(200).json(modifiedArticle);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -197,11 +201,9 @@ exports.deleteArticle = async (req, res) => {
   const articleId = req.params.id;
 
   try {
-    const deleteArticle = articleService.deleteArticle(
-      articleId,
-    )
-    res.status(200).json({message: "Article succesfully deleted"})
+    const deleteArticle = articleService.deleteArticle(articleId);
+    res.status(200).json({ message: "Article succesfully deleted" });
   } catch (error) {
-    res.status(404).json({message: "Article not found"})
+    res.status(404).json({ message: "Article not found" });
   }
 };
