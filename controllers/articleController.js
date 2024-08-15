@@ -1,59 +1,61 @@
 const Article = require("../models/Article");
+const articleService = require("../services/articleService");
+const mediaService = require("../services/mediaService");
 
 // Create a new article
 exports.createArticle = async (req, res) => {
+  const { title, content } = req.body;
+  const articleImage = req.file;
+  const author = req.currentUser.payload.id;
+
+  if (!title) {
+    return res.status(400).json({ message: "Title is required" });
+  }
+
+  if (!articleImage) {
+    return res.status(400).json({ message: "Image is required" });
+  }
+
   try {
-    console.log('Files uploaded:', req.files);
-    const { title, content } = req.body;
-    const author = req.currentUser.payload.id;
+    const uploadResult = await mediaService.articleMedia(
+      articleImage.buffer,
+      articleImage.originalname
+    );
 
-    // Handle image files
-    const images = req.files.map((file) => ({
-      data: file.buffer,
-      contentType: file.mimetype,
-    }));
+    const imageUrl = uploadResult.url;
 
-    const article = new Article({
+    const articleData = {
       title,
       content,
       author,
-      images,
-    });
+      image: imageUrl, // Store the URL of the single image
+    };
 
-    await article.save();
-
-    // Modify response to include concise image information
-    res.status(201).json({
-      article: {
-        _id: article._id,
-        title: article.title,
-        content: article.content,
-        author: article.author,
-        images: article.images.map((image) => ({
-          contentType: image.contentType,
-        })), // only include content type of images
-        createdAt: article.createdAt,
-        updatedAt: article.updatedAt,
-      },
+    const savedArticle = await articleService.createArticle(articleData);
+    return res.status(200).json({
+      message: "Article successfully created",
+      savedArticle,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(400).json({ message: error.message });
   }
 };
 
 // Get all articles
 exports.getAllArticles = async (req, res) => {
   try {
-    const articles = await Article.find().populate("author", "name email");
+    const articles = await articleService.getAllArticles();
 
     const modifiedArticles = articles.map((article) => ({
       _id: article._id,
       title: article.title,
       content: article.content,
       author: article.author,
-      images: article.images.map((image) => ({
-        contentType: image.contentType,
-      })),
+      image: article.image
+        ? {
+            url: article.image,
+          }
+        : null,
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
     }));
@@ -67,10 +69,7 @@ exports.getAllArticles = async (req, res) => {
 // Get an article by ID
 exports.getArticleById = async (req, res) => {
   try {
-    const article = await Article.findById(req.params.id).populate(
-      "author",
-      "name email"
-    );
+    const article = await articleService.getArticleById(req.params.id);
 
     if (!article) {
       return res.status(404).json({ message: "Article not found" });
@@ -81,9 +80,11 @@ exports.getArticleById = async (req, res) => {
       title: article.title,
       content: article.content,
       author: article.author,
-      images: article.images.map((image) => ({
-        contentType: image.contentType,
-      })),
+      image: article.image
+        ? {
+            url: article.image,
+          }
+        : null,
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
     };
@@ -95,64 +96,23 @@ exports.getArticleById = async (req, res) => {
 };
 
 // Get articles by user
-// exports.getArticlesByUser = async (req, res) => {
-//   try {
-//     console.log("Request User ID:", req.params.userId);
-//     const articles = await Article.find({ author: req.params.userId }).populate(
-//       "author",
-//       "name email"
-//     );
-
-//     console.log("Found Articles:", articles);
-
-//     const modifiedArticles = articles.map((article) => ({
-//       _id: article._id,
-//       title: article.title,
-//       content: article.content,
-//       author: article.author,
-//       images: article.images.map((image) => ({
-//         contentType: image.contentType,
-//       })),
-//       createdAt: article.createdAt,
-//       updatedAt: article.updatedAt,
-//     }));
-
-//     res.status(200).json(modifiedArticles);
-//   } catch (error) {
-//     console.error("Error fetching articles:", error);
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
 exports.getArticlesByUser = async (req, res) => {
   try {
-    const articles = await Article.find({ author: req.params.userId }).populate(
-      "author",
-      "name email"
-    );
+    const articles = await articleService.getArticlesByUser(req.params.userId);
 
-    if (!articles || articles.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No articles found for this user" });
-    }
-
-    const modifiedArticles = articles.map((article) => {
-      // Ensure images array is defined
-      const images = article.images || [];
-
-      return {
-        _id: article._id,
-        title: article.title,
-        content: article.content,
-        author: article.author,
-        images: images.map((image) => ({
-          contentType: image.contentType,
-        })),
-        createdAt: article.createdAt,
-        updatedAt: article.updatedAt,
-      };
-    });
+    const modifiedArticles = articles.map((article) => ({
+      _id: article._id,
+      title: article.title,
+      content: article.content,
+      author: article.author,
+      image: article.image
+        ? {
+            url: article.image,
+          }
+        : null,
+      createdAt: article.createdAt,
+      updatedAt: article.updatedAt,
+    }));
 
     res.status(200).json(modifiedArticles);
   } catch (error) {
@@ -163,47 +123,57 @@ exports.getArticlesByUser = async (req, res) => {
 // Update an article by ID
 exports.updateArticle = async (req, res) => {
   try {
+    const { id } = req.params;
     const { title, content } = req.body;
 
-    // Find the article without updating the images
-    const article = await Article.findByIdAndUpdate(
-      req.params.id,
-      {
-        title,
-        content,
-      },
-      { new: true }
-    );
+    // Memanggil service untuk melakukan update artikel
+    const updatedArticle = await articleService.updateArticle(id, {
+      title,
+      content,
+    });
+
+    if (!updatedArticle) {
+      return res.status(404).json({ message: "Article not found" });
+    }
+
+    // Menyiapkan respon dengan data artikel yang sudah diupdate
+    const modifiedArticle = {
+      _id: updatedArticle._id,
+      title: updatedArticle.title,
+      content: updatedArticle.content,
+      author: updatedArticle.author,
+      image: updatedArticle.image ? { url: updatedArticle.image } : null,
+      createdAt: updatedArticle.createdAt,
+      updatedAt: updatedArticle.updatedAt,
+    };
+
+    // Mengirimkan respon
+    res.status(200).json(modifiedArticle);
+  } catch (error) {
+    // Menangani error dan mengirimkan respon error
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Delete an article by ID
+exports.deleteArticle = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const article = await Article.findById(id);
 
     if (!article) {
       return res.status(404).json({ message: "Article not found" });
     }
 
-    const modifiedArticle = {
-      _id: article._id,
-      title: article.title,
-      content: article.content,
-      author: article.author,
-      images: article.images.map((image) => ({
-        contentType: image.contentType,
-      })),
-      createdAt: article.createdAt,
-      updatedAt: article.updatedAt,
-    };
+    if (article.image) {
+      const deleteResult = await mediaService.deleteImage(article.image);
+      console.log(deleteResult.message);
+    }
+    await Article.findByIdAndDelete(id);
 
-    res.status(200).json(modifiedArticle);
+    return res.status(200).json({ message: "Article successfully deleted" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-exports.deleteArticle = async (req, res) => {
-  const articleId = req.params.id;
-
-  try {
-    const deleteArticle = articleService.deleteArticle(articleId);
-    res.status(200).json({ message: "Article succesfully deleted" });
-  } catch (error) {
-    res.status(404).json({ message: "Article not found" });
+    return res.status(500).json({ message: error.message });
   }
 };

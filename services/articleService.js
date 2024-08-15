@@ -1,5 +1,11 @@
 const Article = require("../models/Article");
 
+// Create an Article
+const createArticle = async (articleData) => {
+  const saveArticleimage = new Article(articleData);
+  return await saveArticleimage.save();
+};
+
 // Get all articles
 const getAllArticles = async () => {
   return await Article.find().populate("author", "name email");
@@ -15,32 +21,29 @@ const getArticlesByUser = async (_id) => {
   return await Article.find({ author: _id }).populate("author", "name email");
 };
 
-// Create new article
-const createArticle = async (articleData) => {
-  const article = new Article(articleData);
-  return await article.save();
-};
-
 // Update article by ID
 const updateArticle = async (id, articleData) => {
+  // Mencari artikel berdasarkan ID
   const article = await Article.findById(id);
   if (!article) {
     throw new Error("Article not found");
   }
 
+  // Memperbarui artikel jika title atau content diberikan dalam request
   article.title = articleData.title || article.title;
   article.content = articleData.content || article.content;
 
-  return await article.save();
+  // Menyimpan perubahan ke database dan mengembalikan artikel yang sudah diperbarui
+  const updatedArticle = await article.save();
+  return updatedArticle;
 };
 
+// Delete article by ID
 const deleteArticle = async (id) => {
-  const deleteArticle = Article.findByIdAndDelete(id);
+  const deleteArticle = await Article.findByIdAndDelete(id);
   if (!deleteArticle) {
-    throw new Error ("Article not found")
+    throw new Error("Article not found");
   }
-
-  return
 };
 
 module.exports = {
