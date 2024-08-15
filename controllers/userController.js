@@ -10,7 +10,7 @@ const storageUserProfile = new GridFsStorage({
     file: (req, file) => {
         return {
             filename: `profile_${Date.now()}_${file.originalname}`,  // Unique filename
-            bucketName: 'userProfileImages',  // Bucket name for GridFS
+            bucketName: 'userProfileImages',
         };
     },
 });
