@@ -1,37 +1,41 @@
 const { nanoid } = require("nanoid");
 const path = require("path");
 const postService = require("../services/postService");
+const mediaService = require("../services/mediaService");
+require("dotenv").config();
 
 // Create Post
 exports.createPost = async (req, res) => {
   const { caption, tag } = req.body;
-  const { imageContent } = req.files;
+  const imageContent = req.files;
   const author = req.currentUser.payload.id;
 
   if (!caption) {
     return res.status(400).json({ message: "Caption is required" });
   }
 
-  if (!imageContent) {
-    return res.status(400).json({ message: "Caption is required" });
+  if (imageContent.length === 0) {
+    return res.status(400).json({ message: "At least one image is required" });
   }
 
-  const uniqueFileNames = imageContent.map((file) => {
-    const ext = path.extname(file.originalname);
-    const uniqname = `${nanoid(10)}${ext}`;
-    cb(uniqname);
-  });
-
-  const postData = {
-    caption,
-    tag,
-    author,
-    imageContent,
-  };
-
   try {
+    const uploadPromises = imageContent.map((file) =>
+      mediaService.postMedia(file.buffer, file.originalname)
+    );
+    const uploadResults = await Promise.all(uploadPromises);
+    const imageUrls = uploadResults.map((result) => result.url);
+
+    const postData = {
+      caption,
+      tag,
+      author,
+      imageContent: imageUrls,
+    };
+
     const saveData = await postService.createPost(postData);
-    return res.status(200).json({ message: "Post succesfully created" });
+    return res
+      .status(200)
+      .json({ message: "Post succesfully created", saveData });
   } catch (error) {
     return res.status(400).json({ mesage: error });
   }
@@ -41,17 +45,41 @@ exports.createPost = async (req, res) => {
 exports.updatePost = async (req, res) => {
   const { id } = req.params;
   const { caption, tag } = req.body;
-
-  const newData = {
-    caption,
-    tag,
-  };
+  const imageContent = req.files;
 
   try {
-    const saveData = await postService.updatePost(id, newData);
-    return res.status(200).json({ message: "Post succesfully updated" });
+    const checkPost = await postService.checkPost(id);
+
+    if (!checkPost) {
+      return res.status(404).json({ message: "Post Not Found" });
+    }
+
+    let imageUrls = [];
+
+    if (imageContent && imageContent.length > 0) {
+      const uploadPromises = imageContent.map((file) =>
+        mediaService.postMedia(file.buffer, file.originalname)
+      );
+      
+      try {
+        const uploadResults = await Promise.all(uploadPromises);
+        imageUrls = uploadResults.map((result) => result.url);
+      } catch (uploadError) {
+        return res.status(400).json({ message: "Failed to upload images", error: uploadError.message });
+      }
+    }
+
+    const newData = {
+      caption,
+      tag,
+      imageContent: imageUrls,
+    };
+
+    await postService.updatePost(id, newData);
+
+    return res.status(200).json({ message: "Post successfully updated" });
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return res.status(400).json({ message: "Failed to update post", error: error.message });
   }
 };
 

@@ -1,6 +1,6 @@
 const multer = require("multer");
 const express = require("express");
-const upload = multer();
+// const upload = multer();
 const authController = require("../controllers/authController");
 const otpController = require("../controllers/otpController");
 const userController = require("../controllers/userController");
@@ -10,6 +10,11 @@ const articleController = require("../controllers/articleController");
 const voucherController = require("../controllers/voucherController");
 const postController = require("../controllers/postController");
 const router = express.Router();
+
+// Nambahj
+// Multer setup
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 router.get("/", (req, res) => {
   res.status(200).json({
@@ -53,21 +58,21 @@ router.post(
 router.get("/articles", articleController.getAllArticles);
 router.get("/articles/:id", articleController.getArticleById);
 router.get("/articles/user/:userId", articleController.getArticlesByUser);
-router.put(
-  "/articles/:id",
-  authMiddleware.verifyToken,
-  articleController.updateArticle
-);
+// router.put(
+//   "/articles/:id",
+//   authMiddleware.verifyToken,
+//   articleController.updateArticle
+// );
 router.delete("/ARTICLES/:id", articleController.deleteArticle);
 
 // Post's routers
 router.post(
   "/post",
-  upload.single("imageContent"),
+  upload.array("imageContent"),
   authMiddleware.verifyToken,
   postController.createPost
 );
-router.put("/post/:id", authMiddleware.verifyToken, postController.updatePost);
+router.put("/post/:id", upload.array("imageContent"), authMiddleware.verifyToken, postController.updatePost);
 router.get("/post/:id", authMiddleware.verifyToken, postController.getUserPost);
 router.get("/post/all", authMiddleware.verifyToken, postController.getAllPost);
 router.get(
@@ -77,7 +82,11 @@ router.get(
 );
 
 // Voucher's routes
-router.post("/vouchers/create", voucherController.createVoucherBatch); // Admin route
+router.post(
+  "/vouchers/create",
+  upload.single("none"),
+  voucherController.createVoucherBatch
+); // Admin route
 router.get("/vouchers", voucherController.getAllVouchers); // Admin route
 router.post("/vouchers/validate", voucherController.validateVoucher);
 router.get("/vouchers/user/:userId", voucherController.getVouchersByUser);

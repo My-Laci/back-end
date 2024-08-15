@@ -7,9 +7,24 @@ exports.createPost = async (postData) => {
   return await saveData.save();
 };
 
+exports.checkPost = async (id) => {
+  const post = await Post.findById(id);
+  return post;
+};
+
 exports.updatePost = async (id, newData) => {
-  const postingan = await Post.findByIdAndUpdate(id, newData, { new: true });
-  return postingan;
+  console.log(newData);
+  try {
+    const updatedPost = await Post.findByIdAndUpdate(id, newData, {
+      new: true,
+    });
+    if (!updatedPost) {
+      throw new Error("Post not found");
+    }
+    return updatedPost;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 exports.getUserPost = async (userId) => {
