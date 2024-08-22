@@ -48,17 +48,19 @@ router.get("/users/:id", userController.getUserById);
 router.post("/users/:id/updateFullName", userController.updateFullName);
 router.post("/users/:id/updateEmail", userController.updateEmail);
 router.post("/users/:id/updatePassword", userController.updatePassword);
-router.post("/users/:id/sendEmailVerification", emailController.sendVerificationOTP);
+router.post(
+  "/users/:id/sendEmailVerification",
+  emailController.sendVerificationOTP
+);
 router.post("/users/:id/verifyEmail", emailController.verifyOTP);
 router.post("/users/requestResetPassword", userController.forgotPassword);
 router.post("/users/resetPassword", userController.resetPassword);
 router.post(
-  '/users/:id/profile-image',
-  multer.single('IMAGE'),
+  "/users/:id/profile-image",
+  multer.single("IMAGE"),
   storageImage.uploadProfileImgToCloudStorage,
   userController.updateProfileImage
 );
-
 
 // Article's routes
 router.post(
@@ -96,6 +98,11 @@ router.get(
   "/post/detail/:id",
   authMiddleware.verifyToken,
   postController.getPostDetail
+);
+router.delete(
+  "/posts/:id",
+  authMiddleware.verifyToken,
+  postController.deletePost
 );
 
 // Voucher's routes
