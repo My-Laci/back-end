@@ -37,12 +37,25 @@ exports.createIntership = async (req, res) => {
 };
 
 // Get All
-exports.readAllInternship = async (req, res) => {
+exports.getAllInternship = async (req, res) => {
   try {
     const getAllData = await intershipService.getAllInternship();
     return res
       .status(200)
       .json({ messege: "Internship data succesfully retreive", getAllData });
+  } catch (error) {
+    return res.status(500).json({ messege: error });
+  }
+};
+
+// Get User Internship
+exports.getUserInternship = async (req, res) => {
+  try {
+    const { authorId } = req.params;
+    const getData = await intershipService.getUserInternship(authorId);
+    return res
+      .status(200)
+      .json({ messege: "Internship data succesfully retreive", getData });
   } catch (error) {
     return res.status(500).json({ messege: error });
   }

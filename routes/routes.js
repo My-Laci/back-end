@@ -132,7 +132,12 @@ router.post(
 router.get(
   "/internship",
   authMiddleware.verifyToken,
-  internshipController.readAllInternship
+  internshipController.getAllInternship
+);
+router.get(
+  "/internship/:id",
+  authMiddleware.verifyToken,
+  internshipController.getUserInternship
 );
 
 module.exports = router;
