@@ -1,12 +1,14 @@
-const intershipService = require("../services/internshipService");
+const Internship = require("../models/Intership");
+const internshipService = require("../services/internshipService");
 const userService = require("../services/userService");
 
 // Create Internship
 exports.createIntership = async (req, res) => {
-  const { positions, startDate, endDate, verified } = req.body;
+  const { positions, startDate, endDate, verified, jobdesk } = req.body;
   const authorId = req.currentUser.payload.id;
   const userData = await userService.getUserById(authorId);
   const fullname = userData.name;
+  const jobdeskList = jobdesk.split(",").map((item) => item.trim());
 
   if (!fullname) {
     return res.status(400).json({ message: "Fullname is required" });
@@ -27,22 +29,23 @@ exports.createIntership = async (req, res) => {
     endDate,
     verified,
     authorId,
+    jobdesk: jobdeskList,
   };
 
   try {
-    const saveData = intershipService.createInternship(data);
+    const saveData = await internshipService.createInternship(data);
     return res
       .status(200)
-      .json({ messege: "Internship data succesfully created" });
+      .json({ message: "Internship data successfully created", saveData });
   } catch (error) {
-    return res.status(500).json({ messege: error });
+    return res.status(500).json({ message: error.message });
   }
 };
 
 // Get All
 exports.getAllInternship = async (req, res) => {
   try {
-    const getAllData = await intershipService.getAllInternship();
+    const getAllData = await internshipService.getAllInternship();
     return res
       .status(200)
       .json({ messege: "Internship data succesfully retreive", getAllData });
@@ -55,7 +58,7 @@ exports.getAllInternship = async (req, res) => {
 exports.getUserInternship = async (req, res) => {
   try {
     const { authorId } = req.params;
-    const getData = await intershipService.getUserInternship(authorId);
+    const getData = await internshipService.getUserInternship(authorId);
     return res
       .status(200)
       .json({ messege: "Internship data succesfully retreive", getData });
@@ -68,7 +71,7 @@ exports.getUserInternship = async (req, res) => {
 exports.getInternshipDetail = async (req, res) => {
   try {
     const id = req.params.id;
-    const getData = await intershipService.getInternshipDetail(id);
+    const getData = await internshipService.getInternshipDetail(id);
     console.log(getData);
     return res
       .status(200)
@@ -80,28 +83,45 @@ exports.getInternshipDetail = async (req, res) => {
 
 // Update Internship
 exports.updateInternship = async (req, res) => {
-  const { positions, startDate, endDate } = req.body;
-  console.log(positions);
-
+  const { positions, startDate, endDate, jobdesk, verified } = req.body;
   const id = req.params.id;
 
   const newData = {
     positions,
     startDate,
     endDate,
+    verified,
   };
 
-  console.log(newData);
+  if (jobdesk) {
+    const jobdeskList = jobdesk.split(",").map((item) => item.trim());
+    newData.jobdesk = jobdeskList;
+  }
 
-  const updateData = await intershipService.updateInternship(id, newData);
-  console.log(updateData);
+  try {
+    const updateData = await internshipService.updateInternship(id, newData);
+
+    if (!updateData) {
+      return res.status(404).json({ message: "Internship not found" });
+    }
+
+    return res.status(200).json({
+      message: "Internship successfully updated",
+      updatedInternship: updateData,
+    });
+  } catch (error) {
+    console.error("Error updating internship:", error);
+    return res
+      .status(500)
+      .json({ message: "Failed to update internship", error: error.message });
+  }
 };
 
 // Delete Data
 exports.deleteInternship = async (req, res) => {
   const id = req.params.id;
   try {
-    const deleteIntern = await intershipService.deleteInternship(id);
+    const deleteIntern = await internshipService.deleteInternship(id);
     return res.status(200).json({
       message: "Internship data successfully deleted",
     });

@@ -42,3 +42,13 @@ exports.deleteInternship = async (id) => {
   const deleteData = await Internship.findByIdAndDelete(id);
   return deleteData;
 };
+
+// Verify Status
+exports.verifyStatus = async (id, verified) => {
+  const updateStatus = await Internship.findOneAndUpdate(
+    { _id: id },
+    verified,
+    { new: true }
+  );
+  return updateStatus;
+};
