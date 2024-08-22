@@ -125,7 +125,6 @@ router.delete(
 
 // Search routes
 router.get("/search", searchController.search);
-=======
 // Internship route
 router.post(
   "/internship",
