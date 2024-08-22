@@ -135,9 +135,20 @@ router.get(
   internshipController.getAllInternship
 );
 router.get(
-  "/internship/:id",
+  "/internship/user/:id",
   authMiddleware.verifyToken,
   internshipController.getUserInternship
+);
+router.get(
+  "/internship/:id",
+  authMiddleware.verifyToken,
+  internshipController.getInternshipDetail
+);
+router.put(
+  "/internship/:id",
+  upload.single("none"),
+  authMiddleware.verifyToken,
+  internshipController.updateInternship
 );
 
 module.exports = router;

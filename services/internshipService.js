@@ -19,3 +19,20 @@ exports.getUserInternship = async (authorId) => {
   const userInternship = await Internship.find(authorId);
   return userInternship;
 };
+
+// Read User Data by ID
+exports.getInternshipDetail = async (id) => {
+  const data = await Internship.findById(id);
+  console.log(data);
+  return data;
+};
+
+// Update Data
+exports.updateInternship = async (id, newData) => {
+  const updatedInternship = await Internship.findOneAndUpdate(
+    { _id: id },
+    newData,
+    { new: true }
+  );
+  return updatedInternship;
+};
