@@ -41,3 +41,8 @@ exports.getPostDetail = async (id) => {
   const getDetailPost = await Post.findById(id);
   return getDetailPost;
 };
+
+exports.deletePost = async (postId) => {
+  const result = await Post.findByIdAndDelete(postId);
+  return result;
+};

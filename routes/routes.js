@@ -8,6 +8,7 @@ const articleController = require("../controllers/articleController");
 const voucherController = require("../controllers/voucherController");
 const postController = require("../controllers/postController");
 const searchController = require("../controllers/searchController");
+const internshipController = require("../controllers/internshipController");
 const router = express.Router();
 
 // Nambahj
@@ -100,13 +101,20 @@ router.get(
   authMiddleware.verifyToken,
   postController.getPostDetail
 );
+router.delete(
+  "/posts/:id",
+  authMiddleware.verifyToken,
+  postController.deletePost
+);
 
 // Voucher's routes
 router.post(
   "/vouchers/create",
   upload.single("none"),
   voucherController.createVoucherBatch
-); // Admin route
+);
+
+// Admin route
 router.get("/vouchers", voucherController.getAllVouchers); // Admin route
 router.post("/vouchers/validate", voucherController.validateVoucher);
 router.get("/vouchers/user/:userId", voucherController.getVouchersByUser);
@@ -117,5 +125,39 @@ router.delete(
 
 // Search routes
 router.get("/search", searchController.search);
+=======
+// Internship route
+router.post(
+  "/internship",
+  upload.single("none"),
+  authMiddleware.verifyToken,
+  internshipController.createIntership
+);
+router.get(
+  "/internship",
+  authMiddleware.verifyToken,
+  internshipController.getAllInternship
+);
+router.get(
+  "/internship/user/:id",
+  authMiddleware.verifyToken,
+  internshipController.getUserInternship
+);
+router.get(
+  "/internship/:id",
+  authMiddleware.verifyToken,
+  internshipController.getInternshipDetail
+);
+router.put(
+  "/internship/:id",
+  upload.single("none"),
+  authMiddleware.verifyToken,
+  internshipController.updateInternship
+);
+router.delete(
+  "/internship/:id",
+  authMiddleware.verifyToken,
+  internshipController.deleteInternship
+);
 
 module.exports = router;
