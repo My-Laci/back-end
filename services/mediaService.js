@@ -12,6 +12,7 @@ const bucketName = process.env.BUCKET_NAME;
 
 exports.postMedia = async (buffer, originalname) => {
   console.log(originalname);
+  console.log(buffer);
   try {
     const fileExtension = path.extname(originalname);
     const newFileName = `${Date.now()}-${nanoid(10)}${fileExtension}`;
@@ -19,6 +20,7 @@ exports.postMedia = async (buffer, originalname) => {
     const destination = `${folderName}/${newFileName}`;
 
     const file = storage.bucket(process.env.BUCKET_NAME).file(destination);
+    console.log(file);
 
     // Upload buffer to Google Cloud Storage
     await file.save(buffer, {
@@ -28,6 +30,8 @@ exports.postMedia = async (buffer, originalname) => {
     });
 
     const publicUrl = `https://storage.googleapis.com/${process.env.BUCKET_NAME}/${destination}`;
+
+    console.log(publicUrl);
 
     return { url: publicUrl, message: "Successfully uploaded file" };
   } catch (error) {
@@ -60,13 +64,30 @@ exports.articleMedia = async (buffer, originalname) => {
   }
 };
 
-exports.deleteImage = async (newFilename) => {
+exports.deleteImage = async (publicUrl) => {
   try {
-    const file = bucketName.file(newFilename);
+    const parsedUrl = new URL(publicUrl);
+    let filePath = parsedUrl.pathname.substring(1); 
+
+    console.log("parsedUrl:", parsedUrl);
+    console.log("filePath:", filePath);
+
+    if (filePath.startsWith(bucketName + "/")) {
+      filePath = filePath.substring(bucketName.length + 1);
+    }
+
+    console.log("Adjusted filePath:", filePath);
+
+    const bucket = storage.bucket(bucketName);
+
+    const file = bucket.file(filePath);
+    console.log("file object:", file);
+
     await file.delete();
-    console.log(file)
-    return { message: 'Image successfully deleted' };
+
+    return { message: "Image successfully deleted" };
   } catch (error) {
-    return { message: 'Failed to delete image', error: error.message };
+    console.error("Error deleting image:", error.message);
+    return { message: "Failed to delete image", error: error.message };
   }
 };

@@ -60,12 +60,15 @@ exports.updatePost = async (req, res) => {
       const uploadPromises = imageContent.map((file) =>
         mediaService.postMedia(file.buffer, file.originalname)
       );
-      
+
       try {
         const uploadResults = await Promise.all(uploadPromises);
         imageUrls = uploadResults.map((result) => result.url);
       } catch (uploadError) {
-        return res.status(400).json({ message: "Failed to upload images", error: uploadError.message });
+        return res.status(400).json({
+          message: "Failed to upload images",
+          error: uploadError.message,
+        });
       }
     }
 
@@ -79,7 +82,9 @@ exports.updatePost = async (req, res) => {
 
     return res.status(200).json({ message: "Post successfully updated" });
   } catch (error) {
-    return res.status(400).json({ message: "Failed to update post", error: error.message });
+    return res
+      .status(400)
+      .json({ message: "Failed to update post", error: error.message });
   }
 };
 
@@ -117,5 +122,32 @@ exports.getPostDetail = async (req, res) => {
       .json({ messege: "Data succesfully retreive", getData });
   } catch (error) {
     return res.status(400).json({ messege: error });
+  }
+};
+
+// Delete Post
+exports.deletePost = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const post = await postService.getPostDetail(postId);
+    const imageUrls = post.imageContent;
+
+    if (Array.isArray(imageUrls) && imageUrls.length > 0) {
+      await Promise.all(imageUrls.map((url) => mediaService.deleteImage(url)));
+    }
+
+    const deletePostData = await postService.deletePost(postId);
+    console.log(deletePostData);
+
+    return res.status(200).json({
+      message: "Post and associated images successfully deleted",
+    });
+  } catch (error) {
+    console.error("Error deleting post or images:", error);
+
+    return res.status(500).json({
+      message: "Failed to delete post and images",
+      error: error.message,
+    });
   }
 };
