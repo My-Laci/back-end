@@ -36,3 +36,9 @@ exports.updateInternship = async (id, newData) => {
   );
   return updatedInternship;
 };
+
+// Delete data
+exports.deleteInternship = async (id) => {
+  const deleteData = await Internship.findByIdAndDelete(id);
+  return deleteData;
+};

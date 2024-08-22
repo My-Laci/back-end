@@ -139,7 +139,7 @@ exports.deletePost = async (req, res) => {
     const deletePostData = await postService.deletePost(postId);
     console.log(deletePostData);
 
-    return res.json({
+    return res.status(200).json({
       message: "Post and associated images successfully deleted",
     });
   } catch (error) {

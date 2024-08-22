@@ -64,7 +64,7 @@ exports.getUserInternship = async (req, res) => {
   }
 };
 
-// Get User Internship
+// Get Detail Internship
 exports.getInternshipDetail = async (req, res) => {
   try {
     const id = req.params.id;
@@ -95,4 +95,20 @@ exports.updateInternship = async (req, res) => {
 
   const updateData = await intershipService.updateInternship(id, newData);
   console.log(updateData);
+};
+
+// Delete Data
+exports.deleteInternship = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const deleteIntern = await intershipService.deleteInternship(id);
+    return res.status(200).json({
+      message: "Internship data successfully deleted",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to delete post and images",
+      error: error.message,
+    });
+  }
 };

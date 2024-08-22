@@ -150,5 +150,10 @@ router.put(
   authMiddleware.verifyToken,
   internshipController.updateInternship
 );
+router.delete(
+  "/internship/:id",
+  authMiddleware.verifyToken,
+  internshipController.deleteInternship
+);
 
 module.exports = router;
