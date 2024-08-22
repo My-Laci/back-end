@@ -7,6 +7,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const articleController = require("../controllers/articleController");
 const voucherController = require("../controllers/voucherController");
 const postController = require("../controllers/postController");
+const searchController = require("../controllers/searchController");
 const internshipController = require("../controllers/internshipController");
 const router = express.Router();
 
@@ -122,6 +123,9 @@ router.delete(
   voucherController.deleteVoucherBatch
 );
 
+// Search routes
+router.get("/search", searchController.search);
+=======
 // Internship route
 router.post(
   "/internship",
