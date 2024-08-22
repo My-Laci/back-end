@@ -66,7 +66,7 @@ router.post(
 // Article's routes
 router.post(
   "/articles",
-  upload.single("articleImage"),
+  upload.single("image"),
   authMiddleware.verifyToken,
   articleController.createArticle
 );
@@ -78,7 +78,11 @@ router.put(
   authMiddleware.verifyToken,
   articleController.updateArticle
 );
-router.delete("/articles/:id", articleController.deleteArticle);
+router.delete(
+  "/articles/:id",
+  authMiddleware.verifyToken,
+  articleController.deleteArticle
+);
 
 // Post's routers
 router.post(

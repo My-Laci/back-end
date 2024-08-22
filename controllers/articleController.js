@@ -1,4 +1,3 @@
-const Article = require("../models/Article");
 const articleService = require("../services/articleService");
 const mediaService = require("../services/mediaService");
 
@@ -28,7 +27,7 @@ exports.createArticle = async (req, res) => {
       title,
       content,
       author,
-      image: imageUrl, // Store the URL of the single image
+      image: imageUrl, 
     };
 
     const savedArticle = await articleService.createArticle(articleData);
@@ -157,23 +156,24 @@ exports.updateArticle = async (req, res) => {
 
 // Delete an article by ID
 exports.deleteArticle = async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const article = await Article.findById(id);
+    const id = req.params.id;
+    const article = await articleService.getArticleById(id);
+    const imageUrls = article.image;
 
-    if (!article) {
-      return res.status(404).json({ message: "Article not found" });
-    }
+    const deleteImage = await mediaService.deleteImage(imageUrls);
 
-    if (article.image) {
-      const deleteResult = await mediaService.deleteImage(article.image);
-      console.log(deleteResult.message);
-    }
-    await Article.findByIdAndDelete(id);
+    const deleteArticle = await articleService.deleteArticle(id);
 
-    return res.status(200).json({ message: "Article successfully deleted" });
+    return res.status(200).json({
+      message: "Article and associated images successfully deleted",
+    });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    console.error("Error deleting post or images:", error);
+
+    return res.status(500).json({
+      message: "Failed to delete post and images",
+      error: error.message,
+    });
   }
 };
