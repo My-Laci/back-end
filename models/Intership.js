@@ -25,6 +25,10 @@ const internshipSchema = new Schema(
       type: Date,
       required: false,
     },
+    jobdesk: {
+      type: [String],
+      required: false,
+    },
     verified: {
       type: Boolean,
       default: false,
