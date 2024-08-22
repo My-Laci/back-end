@@ -7,6 +7,7 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const articleController = require("../controllers/articleController");
 const voucherController = require("../controllers/voucherController");
 const postController = require("../controllers/postController");
+const internshipController = require("../controllers/internshipController");
 const router = express.Router();
 
 // Nambahj
@@ -110,13 +111,28 @@ router.post(
   "/vouchers/create",
   upload.single("none"),
   voucherController.createVoucherBatch
-); // Admin route
+);
+
+// Admin route
 router.get("/vouchers", voucherController.getAllVouchers); // Admin route
 router.post("/vouchers/validate", voucherController.validateVoucher);
 router.get("/vouchers/user/:userId", voucherController.getVouchersByUser);
 router.delete(
   "/vouchers/batch/:batchName",
   voucherController.deleteVoucherBatch
+);
+
+// Internship route
+router.post(
+  "/internship",
+  upload.single("none"),
+  authMiddleware.verifyToken,
+  internshipController.createIntership
+);
+router.get(
+  "/internship",
+  authMiddleware.verifyToken,
+  internshipController.readAllInternship
 );
 
 module.exports = router;
