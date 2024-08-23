@@ -12,18 +12,15 @@ function createToken(user) {
 exports.signUp = async (data) => {
     try {
         const { name, email, password, agencyOrigin } = data;
-        console.log("a");
 
         // Check existing users
         const existingUser = await User.findOne({ email });
-        console.log("b");
 
         if (existingUser) {
             throw Error("Email already in use");
         }
         //Hash Password 
         const hashedPassword = await bcrypt.hash(password, 10);
-        console.log("c");
         // Create new temporary user
         const newUser = new User({
             name,
@@ -32,9 +29,7 @@ exports.signUp = async (data) => {
             password: hashedPassword,
             profileImg: "https://storage.googleapis.com/laci-development/usersProfileImage/defaultprofile.jpg"
         });
-        console.log("d");
         await newUser.save();
-        console.log("e");
 
         // Return the new user without the password
         return { id: newUser._id, name: newUser.name, email: newUser.email, agencyOrigin: newUser.agencyOrigin }

@@ -47,8 +47,9 @@ exports.signUp = async (req, res) => {
             message: "Please Check your email for verification.",
         });
     } catch (error) {
-        console.log(error);
-        return res.status(400).json({ message: error.message });
+        if (!res.headersSent) {
+            return res.status(400).json({ message: error.message });
+        }
     }
 
 };
