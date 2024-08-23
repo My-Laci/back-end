@@ -32,20 +32,23 @@ exports.signUp = async (req, res) => {
 
 
         await authService.signUp({ name, email, agencyOrigin, password });
+        console.log("bbabsa");
         await emailVerifService.sendVerificationOTP(email);
 
+
         // Update status voucher
+        console.log("Voucher found:", voucherCode);
         voucherCode.isActive = false;
         await voucherCode.save();
+        console.log("Voucher status updated");
 
         res.status(200).json({
             status: true,
-            message: "OTP sent to your email. Please enter the OTP to complete the sign-up process.",
+            message: "Please Check your email for verification.",
         });
     } catch (error) {
-        if (!res.headersSent) {
-            res.status(400).json({ error: error.message });
-        }
+        console.log(error);
+        return res.status(400).json({ message: error.message });
     }
 
 };
