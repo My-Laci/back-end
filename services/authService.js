@@ -11,7 +11,7 @@ function createToken(user) {
 
 exports.signUp = async (data) => {
     try {
-        const { name, email, password } = data;
+        const { name, email, password, agencyOrigin } = data;
 
         // Check existing users
         const existingUser = await User.findOne({ email });
@@ -26,13 +26,14 @@ exports.signUp = async (data) => {
         const newUser = new User({
             name,
             email,
+            agencyOrigin,
             password: hashedPassword,
             profileImg: "https://storage.googleapis.com/laci-development/usersProfileImage/defaultprofile.jpg"
         });
         await newUser.save();
 
         // Return the new user without the password
-        return { id: newUser._id, name: newUser.name, email: newUser.email }
+        return { id: newUser._id, name: newUser.name, email: newUser.email, agencyOrigin: newUser.agencyOrigin }
     } catch (error) {
         throw error;
     }
