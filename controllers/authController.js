@@ -6,12 +6,13 @@ const User = require('../models/User');
 
 exports.signUp = async (req, res) => {
     try {
-        let { name, email, password, code } = req.body;
+        let { name, email, password, agencyOrigin, code } = req.body;
         name = name.trim();
         email = email.trim();
+        agencyOrigin = agencyOrigin.trim();
         password = password.trim();
 
-        if (!(name && email && password && code)) {
+        if (!(name && email && agencyOrigin && password && code)) {
             throw Error("Empty input fields!");
         } else if (!/^[a-zA-Z ]*$/.test(name)) {
             throw Error("Invalid name entered");
@@ -30,10 +31,8 @@ exports.signUp = async (req, res) => {
 
 
 
-        await authService.signUp({ name, email, password });
-        console.log("a");
+        await authService.signUp({ name, email, agencyOrigin, password });
         await emailVerifService.sendVerificationOTP(email);
-        console.log("b");
 
         // Update status voucher
         voucherCode.isActive = false;
