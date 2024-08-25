@@ -11,28 +11,28 @@ function createToken(user) {
 
 exports.signUp = async (data) => {
     try {
-        const { name, email, password } = data;
+        const { name, email, password, agencyOrigin } = data;
 
         // Check existing users
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
-            throw Error("Email sudah terpakai");
+            throw Error("Email already in use");
         }
         //Hash Password 
         const hashedPassword = await bcrypt.hash(password, 10);
-
         // Create new temporary user
         const newUser = new User({
             name,
             email,
+            agencyOrigin,
             password: hashedPassword,
             profileImg: "https://storage.googleapis.com/laci-development/usersProfileImage/defaultprofile.jpg"
         });
         await newUser.save();
 
         // Return the new user without the password
-        return { id: newUser._id, name: newUser.name, email: newUser.email }
+        return { id: newUser._id, name: newUser.name, email: newUser.email, agencyOrigin: newUser.agencyOrigin }
     } catch (error) {
         throw error;
     }
