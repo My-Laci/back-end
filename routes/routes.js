@@ -44,7 +44,10 @@ router.post("/signup", authController.signUp);
 router.post("/signin", upload.single("none"), authController.signIn);
 router.post("/signout", authController.signout);
 router.get("/users", userController.getAllUsers);
-router.get("/users/:id", userController.getUserById);
+router.get(
+  "/users/:id",
+  userController.getUserById
+);
 
 // User's routes
 router.post("/users/:id/updateFullName", userController.updateFullName);
