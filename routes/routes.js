@@ -41,7 +41,7 @@ router.get("/private-test", authMiddleware.verifyToken, (req, res) => {
     );
 });
 router.post("/signup", authController.signUp);
-router.post("/signin", authController.signIn);
+router.post("/signin", upload.single("none"), authController.signIn);
 router.post("/signout", authController.signout);
 router.get("/users", userController.getAllUsers);
 router.get("/users/:id", userController.getUserById);

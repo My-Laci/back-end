@@ -6,11 +6,17 @@ require("dotenv").config();
 
 const { PORT } = process.env;
 const app = express();
+const frontendUrl = "http://127.0.0.1:5173";
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cors());
+app.use(express.json({}));
+app.use(
+  cors({
+    origin: frontendUrl, // Allow only this origin
+    credentials: true,
+  })
+);
 
 // Routes
 app.use("/", require("./routes/routes"));

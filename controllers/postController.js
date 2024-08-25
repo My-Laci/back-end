@@ -25,6 +25,8 @@ exports.createPost = async (req, res) => {
     const uploadResults = await Promise.all(uploadPromises);
     const imageUrls = uploadResults.map((result) => result.url);
 
+    const tags = Array.isArray(tag) ? [...new Set(tag)] : [];
+
     const postData = {
       caption,
       tag,

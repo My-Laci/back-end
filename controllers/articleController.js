@@ -149,7 +149,6 @@ exports.updateArticle = async (req, res) => {
     // Mengirimkan respon
     res.status(200).json(modifiedArticle);
   } catch (error) {
-    // Menangani error dan mengirimkan respon error
     res.status(500).json({ error: error.message });
   }
 };
