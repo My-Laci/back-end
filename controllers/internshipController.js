@@ -6,12 +6,9 @@ const userService = require("../services/userService");
 exports.createIntership = async (req, res) => {
   const { positions, startDate, endDate, verified, jobdesk } = req.body;
   const authorId = req.currentUser.payload.id;
-  const userData = await userService.getUserById(authorId);
-  const fullname = userData.name;
-  const jobdeskList = jobdesk.split(",").map((item) => item.trim());
 
-  if (!fullname) {
-    return res.status(400).json({ message: "Fullname is required" });
+  if (!authorId) {
+    return res.status(400).json({ message: "Author ID is required" });
   }
 
   if (!positions) {
@@ -22,8 +19,19 @@ exports.createIntership = async (req, res) => {
     return res.status(400).json({ message: "Start date is required" });
   }
 
+  const userData = await userService.getUserById(authorId);
+  const fullname = userData.name;
+  const email = userData.email
+
+  if (!fullname) {
+    return res.status(400).json({ message: "Fullname is required" });
+  }
+
+  const jobdeskList = jobdesk.split(",").map((item) => item.trim());
+
   const data = {
     fullname,
+    email,
     positions,
     startDate,
     endDate,
@@ -57,8 +65,7 @@ exports.getAllInternship = async (req, res) => {
 // Get User Internship
 exports.getUserInternship = async (req, res) => {
   try {
-    const { authorId } = req.params;
-    const getData = await internshipService.getUserInternship(authorId);
+    const getData = await internshipService.getUserInternship(req.params.id);
     return res
       .status(200)
       .json({ messege: "Internship data succesfully retreive", getData });

@@ -22,6 +22,6 @@ exports.verifyOTP = async (req, res) => {
         await emailVerifService.verifyOTP({ id, otp });
         res.status(200).json({ id, verified: true });
     } catch (error) {
-        res.status(400).send(error.message);
+        res.status(400).send({ id, verified: true, message: error.message });
     }
 };
