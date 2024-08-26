@@ -8,17 +8,26 @@ const createArticle = async (articleData) => {
 
 // Get all articles
 const getAllArticles = async () => {
-  return await Article.find().populate("author", "name email");
+  return await Article.find().populate(
+    "author",
+    "name email agencyOrigin profileImg"
+  );
 };
 
 // Get article by ID
 const getArticleById = async (id) => {
-  return await Article.findById(id).populate("author", "name email");
+  return await Article.findById(id).populate(
+    "author",
+    "name email agencyOrigin profileImg"
+  );
 };
 
 // Get articles by user
 const getArticlesByUser = async (_id) => {
-  return await Article.find({ author: _id }).populate("author", "name email");
+  return await Article.find({ author: _id }).populate(
+    "author",
+    "name email agencyOrigin profileImg"
+  );
 };
 
 // Update article by ID

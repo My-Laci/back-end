@@ -1,13 +1,14 @@
 const { nanoid } = require("nanoid");
 const Voucher = require("../models/Voucher");
 
-exports.createVoucherBatch = async (batchName, quantity) => {
+exports.createVoucherBatch = async (batchName, quantity, userId) => {
   const vouchers = [];
 
   for (let i = 0; i < quantity; i++) {
     const voucher = new Voucher({
       code: nanoid(),
       batch: batchName,
+      userId: userId,
     });
     vouchers.push(voucher);
   }
@@ -49,6 +50,11 @@ exports.getAllVouchers = async () => {
 
   return groupedVouchers;
 };
+
+exports.getVouchersByBatch = async (batchName) => {
+  return await Voucher.find({ batch: batchName });
+};
+
 
 exports.deleteVoucherBatch = async (batchName) => {
   const result = await Voucher.deleteMany({ batch: batchName });
