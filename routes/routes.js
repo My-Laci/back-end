@@ -122,7 +122,7 @@ router.post(
 
 // Admin route
 router.get("/vouchers", voucherController.getAllVouchers); // Admin route
-router.post("/vouchers/validate", voucherController.validateVoucher);
+router.get('/vouchers/batch/:batchName', voucherController.getVouchersByBatch);
 router.get("/vouchers/user/:userId", voucherController.getVouchersByUser);
 router.delete(
   "/vouchers/batch/:batchName",

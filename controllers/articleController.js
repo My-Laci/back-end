@@ -53,7 +53,13 @@ exports.getAllArticles = async (req, res) => {
       _id: article._id,
       title: article.title,
       content: article.content,
-      author: article.author,
+      author: {
+        _id: article.author._id,
+        name: article.author.name,
+        email: article.author.email,
+        agencyOrigin: article.author.agencyOrigin,
+        profileImg: article.author.profileImg,
+      },
       image: article.image
         ? {
             url: article.image,
@@ -82,7 +88,13 @@ exports.getArticleById = async (req, res) => {
       _id: article._id,
       title: article.title,
       content: article.content,
-      author: article.author,
+      author: {
+        _id: article.author._id,
+        name: article.author.name,
+        email: article.author.email,
+        agencyOrigin: article.author.agencyOrigin,
+        profileImg: article.author.profileImg,
+      },
       image: article.image
         ? {
             url: article.image,
@@ -107,12 +119,14 @@ exports.getArticlesByUser = async (req, res) => {
       _id: article._id,
       title: article.title,
       content: article.content,
-      author: article.author,
-      image: article.image
-        ? {
-            url: article.image,
-          }
-        : null,
+      author: {
+        _id: article.author._id,
+        name: article.author.name,
+        email: article.author.email,
+        agencyOrigin: article.author.agencyOrigin,
+        profileImg: article.author.profileImg,
+      },
+      image: article.image ? { url: article.image } : null,
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
     }));

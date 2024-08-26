@@ -3,6 +3,7 @@ const voucherService = require("../services/voucherService");
 exports.createVoucherBatch = async (req, res) => {
   try {
     const { batchName, quantity } = req.body;
+
     const vouchers = await voucherService.createVoucherBatch(
       batchName,
       quantity
@@ -22,6 +23,21 @@ exports.getAllVouchers = async (req, res) => {
   try {
     const groupedVouchers = await voucherService.getAllVouchers();
     res.status(200).json(groupedVouchers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getVouchersByBatch = async (req, res) => {
+  try {
+    const { batchName } = req.params;
+    const vouchers = await voucherService.getVouchersByBatch(batchName);
+    if (vouchers.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No vouchers found for this batch." });
+    }
+    res.status(200).json(vouchers);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
