@@ -1,4 +1,5 @@
 const articleService = require("../services/articleService");
+const userService = require("../services/userService");
 const mediaService = require("../services/mediaService");
 
 // Create a new article
@@ -6,6 +7,8 @@ exports.createArticle = async (req, res) => {
   const { title, content } = req.body;
   const articleImage = req.file;
   const author = req.currentUser.payload.id;
+  const authorData = await userService.getUserById(author);
+  const authorName = authorData.name;
 
   if (!title) {
     return res.status(400).json({ message: "Title is required" });
@@ -24,10 +27,11 @@ exports.createArticle = async (req, res) => {
     const imageUrl = uploadResult.url;
 
     const articleData = {
+      authorName,
       title,
       content,
       author,
-      image: imageUrl, 
+      image: imageUrl,
     };
 
     const savedArticle = await articleService.createArticle(articleData);
@@ -149,7 +153,6 @@ exports.updateArticle = async (req, res) => {
     // Mengirimkan respon
     res.status(200).json(modifiedArticle);
   } catch (error) {
-    // Menangani error dan mengirimkan respon error
     res.status(500).json({ error: error.message });
   }
 };

@@ -28,7 +28,7 @@ exports.updatePost = async (id, newData) => {
 };
 
 exports.getUserPost = async (userId) => {
-  const getPost = await Post.find(userId);
+  const getPost = await Post.find({ author: userId });
   return getPost;
 };
 

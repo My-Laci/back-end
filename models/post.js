@@ -3,13 +3,23 @@ const { buffer } = require("stream/consumers");
 
 const PostSchema = new mongoose.Schema(
   {
+    fullname: {
+      type: String,
+      required: true,
+    },
+    agencyOrigin: {
+      type: String,
+      required: true,
+    },
     caption: {
       type: String,
       required: true,
     },
-    tag: {
-      type: String,
-    },
+    tag: [
+      {
+        type: String,
+      },
+    ],
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

@@ -41,7 +41,7 @@ router.get("/private-test", authMiddleware.verifyToken, (req, res) => {
     );
 });
 router.post("/signup", authController.signUp);
-router.post("/signin", authController.signIn);
+router.post("/signin", upload.single("none"), authController.signIn);
 router.post("/signout", authController.signout);
 router.get("/users", authMiddleware.verifyToken, userController.getAllUsers);
 router.get("/users/:id", authMiddleware.verifyToken, userController.getUserById);
@@ -101,7 +101,7 @@ router.put(
   postController.updatePost
 );
 router.get("/post/:id", authMiddleware.verifyToken, postController.getUserPost);
-router.get("/post/all", authMiddleware.verifyToken, postController.getAllPost);
+router.get("/posts", authMiddleware.verifyToken, postController.getAllPost);
 router.get(
   "/post/detail/:id",
   authMiddleware.verifyToken,
