@@ -11,12 +11,7 @@ const frontendUrl = "http://127.0.0.1:5173";
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({}));
-app.use(
-  cors({
-    origin: frontendUrl, // Allow only this origin
-    credentials: true,
-  })
-);
+app.use(cors());
 
 // Routes
 app.use("/", require("./routes/routes"));
