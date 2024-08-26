@@ -102,7 +102,7 @@ router.put(
   postController.updatePost
 );
 router.get("/post/:id", authMiddleware.verifyToken, postController.getUserPost);
-router.get("/post/all", authMiddleware.verifyToken, postController.getAllPost);
+router.get("/posts", authMiddleware.verifyToken, postController.getAllPost);
 router.get(
   "/post/detail/:id",
   authMiddleware.verifyToken,

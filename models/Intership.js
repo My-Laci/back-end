@@ -13,6 +13,10 @@ const internshipSchema = new Schema(
       required: true,
       trim: true,
     },
+    email: {
+      type: String,
+      required: true,
+    },
     positions: {
       type: String,
       required: true,

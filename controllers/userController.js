@@ -30,12 +30,10 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
   try {
-    const { id } = req.params; // Ambil id dari req.params
+    const { id } = req.params; 
     if (!id) {
       throw Error("User ID is required.");
     }
-
-    console.log(`Fetching user with ID: ${id}`);
 
     const user = await userService.getUserById(id);
     res.status(200).json(user);

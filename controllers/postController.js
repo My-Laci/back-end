@@ -1,6 +1,7 @@
 const { nanoid } = require("nanoid");
 const path = require("path");
 const postService = require("../services/postService");
+const userService = require("../services/userService");
 const mediaService = require("../services/mediaService");
 require("dotenv").config();
 
@@ -9,6 +10,10 @@ exports.createPost = async (req, res) => {
   const { caption, tag } = req.body;
   const imageContent = req.files;
   const author = req.currentUser.payload.id;
+  console.log(author);
+  const authorData = await userService.getUserById(author);
+  const fullname = authorData.name;
+  const agencyOrigin = authorData.agencyOrigin;
 
   if (!caption) {
     return res.status(400).json({ message: "Caption is required" });
@@ -28,6 +33,8 @@ exports.createPost = async (req, res) => {
     const tags = Array.isArray(tag) ? [...new Set(tag)] : [];
 
     const postData = {
+      fullname,
+      agencyOrigin,
       caption,
       tag,
       author,
@@ -92,10 +99,10 @@ exports.updatePost = async (req, res) => {
 
 //  Get user post
 exports.getUserPost = async (req, res) => {
-  const { userId } = req.params;
+  // const { userId } = req.params;
 
   try {
-    const getUserPost = await postService.getUserPost(userId);
+    const getUserPost = await postService.getUserPost(req.params.id);
     return res
       .status(200)
       .json({ messege: "Data succesfully retreive", getUserPost });
@@ -108,7 +115,7 @@ exports.getUserPost = async (req, res) => {
 exports.getAllPost = async (req, res) => {
   try {
     const getAllPost = await postService.getAllPost();
-    return res.status(201).json({ messege: "Data succesfully retreive" });
+    return res.status(201).json({ getAllPost });
   } catch (error) {
     return res.status(400).json({ messege: error });
   }

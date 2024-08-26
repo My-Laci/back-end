@@ -15,10 +15,17 @@ exports.getAllInternship = async () => {
 };
 
 // Read User Data
-exports.getUserInternship = async (authorId) => {
-  const userInternship = await Internship.find(authorId);
-  return userInternship;
+exports.getUserInternship = async (userId) => {
+  try {
+    console.log("kontol")
+    const result = await Internship.find({ authorId : userId });
+    return result;
+  } catch (error) {
+    console.error("Error fetching internships:", error);
+    throw error; 
+  }
 };
+
 
 // Read User Data by ID
 exports.getInternshipDetail = async (id) => {
