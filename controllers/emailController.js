@@ -20,8 +20,8 @@ exports.verifyOTP = async (req, res) => {
         if (!(otp)) throw Error("Empty OTP details are not allowed");
 
         await emailVerifService.verifyOTP({ id, otp });
-        res.status(200).json({ id, verified: true });
+        res.status(200).json({ verified: true });
     } catch (error) {
-        res.status(400).send({ id, verified: true, message: error.message });
+        res.status(400).send({ verified: true, message: error.message });
     }
 };
