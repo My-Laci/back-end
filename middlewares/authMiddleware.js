@@ -16,7 +16,6 @@ exports.verifyToken = async (req, res, next) => {
     try {
         const decodedToken = await jwt.verify(token, TOKEN_KEY);
         req.currentUser = decodedToken;
-        console.log(req.currentUser.payload.id);
     } catch (error) {
         console.log(error);
         return res.status(401).send("Unauthorized Access");
