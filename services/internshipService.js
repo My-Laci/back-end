@@ -17,7 +17,6 @@ exports.getAllInternship = async () => {
 // Read User Data
 exports.getUserInternship = async (userId) => {
   try {
-    console.log("kontol")
     const result = await Internship.find({ authorId : userId });
     return result;
   } catch (error) {
