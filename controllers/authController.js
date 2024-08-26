@@ -32,7 +32,6 @@ exports.signUp = async (req, res) => {
 
 
         await authService.signUp({ name, email, agencyOrigin, password });
-        console.log("bbabsa");
         await emailVerifService.sendVerificationOTP(email);
 
 
