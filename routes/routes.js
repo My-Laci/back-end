@@ -43,15 +43,16 @@ router.get("/private-test", authMiddleware.verifyToken, (req, res) => {
 router.post("/signup", authController.signUp);
 router.post("/signin", authController.signIn);
 router.post("/signout", authController.signout);
-router.get("/users", userController.getAllUsers);
-router.get("/users/:id", userController.getUserById);
+router.get("/users", authMiddleware.verifyToken, userController.getAllUsers);
+router.get("/users/:id", authMiddleware.verifyToken, userController.getUserById);
 
 // User's routes
-router.post("/users/:id/updateFullName", userController.updateFullName);
-router.post("/users/:id/updateEmail", userController.updateEmail);
-router.post("/users/:id/updatePassword", userController.updatePassword);
+router.patch("/users/:id/updateFullName", authMiddleware.verifyToken, userController.updateFullName);
+router.patch("/users/:id/updateEmail", authMiddleware.verifyToken, userController.updateEmail);
+router.patch("/users/:id/updatePassword", authMiddleware.verifyToken, userController.updatePassword);
 router.post(
   "/users/:id/sendEmailVerification",
+  authMiddleware.verifyToken,
   emailController.sendVerificationOTP
 );
 router.post("/users/:id/verifyEmail", emailController.verifyOTP);
@@ -59,6 +60,7 @@ router.post("/users/requestResetPassword", userController.forgotPassword);
 router.post("/users/resetPassword", userController.resetPassword);
 router.post(
   "/users/:id/profile-image",
+  authMiddleware.verifyToken,
   multer.single("IMAGE"),
   storageImage.uploadProfileImgToCloudStorage,
   userController.updateProfileImage

@@ -74,7 +74,7 @@ exports.updateEmail = async (req, res) => {
             data: { id: id, newEmail: newEmail, emailChanged: true },
         });
     } catch (error) {
-        res.status(400).send(error.message);
+        res.status(400).send({ message: error.message });
     }
 };
 
