@@ -10,8 +10,7 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json({}));
 app.use(cors({
-  origin: '*',
-  credentials: true
+  origin: '*'
 }));
 
 app.use("/", require("./routes/routes"));
