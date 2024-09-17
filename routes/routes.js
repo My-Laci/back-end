@@ -15,7 +15,7 @@ const router = express.Router();
 const storage = Multer.memoryStorage();
 const upload = Multer({ storage });
 
-router.get("/", (res) => {
+router.get("/", (req, res) => {
   res.status(200).json({
     message: "Welcome to Laci API Server.",
   });
@@ -24,7 +24,7 @@ router.get("/", (res) => {
 const storageImage = require("../middlewares/storage");
 
 const multer = Multer({
-  storage: Multer.MemoryStorage,
+  storage: Multer.memoryStorage,
   fileSize: 10 * 1024 * 1024,
   limits: {
     fileSize: 10 * 1024 * 1024,
