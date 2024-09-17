@@ -12,8 +12,6 @@ exports.createPost = async (req, res) => {
   const author = req.currentUser.payload.id;
   console.log(author);
   const authorData = await userService.getUserById(author);
-  const fullname = authorData.name;
-  const agencyOrigin = authorData.agencyOrigin;
 
   if (!caption) {
     return res.status(400).json({ message: "Caption is required" });
@@ -33,8 +31,9 @@ exports.createPost = async (req, res) => {
     const tags = Array.isArray(tag) ? [...new Set(tag)] : [];
 
     const postData = {
-      fullname,
-      agencyOrigin,
+      fullname: authorData.name,
+      agencyOrigin: authorData.agencyOrigin,
+      profileImage: authorData.profileImg,
       caption,
       tag,
       author,
@@ -63,28 +62,9 @@ exports.updatePost = async (req, res) => {
       return res.status(404).json({ message: "Post Not Found" });
     }
 
-    let imageUrls = [];
-
-    if (imageContent && imageContent.length > 0) {
-      const uploadPromises = imageContent.map((file) =>
-        mediaService.postMedia(file.buffer, file.originalname)
-      );
-
-      try {
-        const uploadResults = await Promise.all(uploadPromises);
-        imageUrls = uploadResults.map((result) => result.url);
-      } catch (uploadError) {
-        return res.status(400).json({
-          message: "Failed to upload images",
-          error: uploadError.message,
-        });
-      }
-    }
-
     const newData = {
       caption,
       tag,
-      imageContent: imageUrls,
     };
 
     await postService.updatePost(id, newData);
