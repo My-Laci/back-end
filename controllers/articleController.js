@@ -62,8 +62,8 @@ exports.getAllArticles = async (req, res) => {
       },
       image: article.image
         ? {
-            url: article.image,
-          }
+          url: article.image,
+        }
         : null,
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
@@ -97,8 +97,8 @@ exports.getArticleById = async (req, res) => {
       },
       image: article.image
         ? {
-            url: article.image,
-          }
+          url: article.image,
+        }
         : null,
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
@@ -143,7 +143,6 @@ exports.updateArticle = async (req, res) => {
     const { id } = req.params;
     const { title, content } = req.body;
 
-    // Memanggil service untuk melakukan update artikel
     const updatedArticle = await articleService.updateArticle(id, {
       title,
       content,
@@ -153,7 +152,6 @@ exports.updateArticle = async (req, res) => {
       return res.status(404).json({ message: "Article not found" });
     }
 
-    // Menyiapkan respon dengan data artikel yang sudah diupdate
     const modifiedArticle = {
       _id: updatedArticle._id,
       title: updatedArticle.title,
@@ -164,7 +162,6 @@ exports.updateArticle = async (req, res) => {
       updatedAt: updatedArticle.updatedAt,
     };
 
-    // Mengirimkan respon
     res.status(200).json(modifiedArticle);
   } catch (error) {
     res.status(500).json({ error: error.message });

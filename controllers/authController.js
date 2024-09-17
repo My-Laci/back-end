@@ -1,5 +1,4 @@
 const authService = require('../services/authService');
-const emailVerifController = require('./emailController');
 const emailVerifService = require("../services/emailService");
 const Voucher = require("../models/Voucher");
 const User = require('../models/User');
@@ -22,24 +21,16 @@ exports.signUp = async (req, res) => {
             throw Error("Password is too short!");
         }
 
-        // Check for Voucher
         const voucherCode = await Voucher.findOne({ code, isActive: true });
         if (!voucherCode) {
             res.status(400).json({ message: "Invalid or inactive voucher" });
         }
 
-
-
-
         await authService.signUp({ name, email, agencyOrigin, password });
         await emailVerifService.sendVerificationOTP(email);
 
-
-        // Update status voucher
-        console.log("Voucher found:", voucherCode);
         voucherCode.isActive = false;
         await voucherCode.save();
-        console.log("Voucher status updated");
 
         res.status(200).json({
             status: true,
@@ -71,53 +62,13 @@ exports.signIn = async (req, res) => {
     }
 };
 
-
-
-exports.verifySignUpOTP = async (req, res) => {
-    try {
-        const { email, otp } = req.body;
-
-        await emailVerifService.verifyOTPSignUp({ email, otp });
-
-        // Retrieve the temporarily stored user data from MongoDB
-        const tempUser = await TempUser.findOne({ email });
-        if (!tempUser) {
-            throw Error("Temporary user not found. Please sign up again.");
-        }
-
-        // Create the permanent user in the `users` collection
-        const newUser = new User({
-            name: tempUser.name,
-            email: tempUser.email,
-            password: tempUser.password,
-        });
-        await newUser.save();
-
-        // Delete the temporary user from `temp_users` collection
-        await TempUser.deleteOne({ email });
-
-        res.status(201).json({
-            status: true,
-            message: "User Created!",
-            data: { id: newUser._id, name: newUser.name, email: newUser.email },
-        });
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-};
-
 exports.signout = async (req, res) => {
     try {
-        // Asumsikan token disimpan di header Authorization: "Bearer <token>"
         const token = req.body.token || req.query.token || req.headers["x-access-token"] || (req.headers["authorization"] && req.headers["authorization"].split(" ")[1]);;
         if (!token) throw Error("Token missing or invalid");
 
-        // Cari pengguna berdasarkan token yang ada
-        console.log(token);
         const user = await User.findOne({ token });
         if (!user) throw Error("User not found or already logged out");
-
-        // Hapus token dari pengguna untuk logout
         user.token = null;
         await user.save();
 
