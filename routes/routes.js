@@ -44,12 +44,28 @@ router.post("/signup", authController.signUp);
 router.post("/signin", upload.single("none"), authController.signIn);
 router.post("/signout", authController.signout);
 router.get("/users", authMiddleware.verifyToken, userController.getAllUsers);
-router.get("/users/:id", authMiddleware.verifyToken, userController.getUserById);
+router.get(
+  "/users/:id",
+  authMiddleware.verifyToken,
+  userController.getUserById
+);
 
 // User's routes
-router.patch("/users/:id/updateFullName", authMiddleware.verifyToken, userController.updateFullName);
-router.patch("/users/:id/updateEmail", authMiddleware.verifyToken, userController.updateEmail);
-router.patch("/users/:id/updatePassword", authMiddleware.verifyToken, userController.updatePassword);
+router.patch(
+  "/users/:id/updateFullName",
+  authMiddleware.verifyToken,
+  userController.updateFullName
+);
+router.patch(
+  "/users/:id/updateEmail",
+  authMiddleware.verifyToken,
+  userController.updateEmail
+);
+router.patch(
+  "/users/:id/updatePassword",
+  authMiddleware.verifyToken,
+  userController.updatePassword
+);
 router.post(
   "/users/:id/sendEmailVerification",
   authMiddleware.verifyToken,
@@ -100,13 +116,9 @@ router.put(
   authMiddleware.verifyToken,
   postController.updatePost
 );
-router.get("/post/:id", authMiddleware.verifyToken, postController.getUserPost);
-router.get("/posts", authMiddleware.verifyToken, postController.getAllPost);
-router.get(
-  "/post/detail/:id",
-  authMiddleware.verifyToken,
-  postController.getPostDetail
-);
+router.get("/post/:id", postController.getUserPost);
+router.get("/posts", postController.getAllPost);
+router.get("/post/detail/:id", postController.getPostDetail);
 router.delete(
   "/posts/:id",
   authMiddleware.verifyToken,
@@ -122,7 +134,7 @@ router.post(
 
 // Admin route
 router.get("/vouchers", voucherController.getAllVouchers); // Admin route
-router.get('/vouchers/batch/:batchName', voucherController.getVouchersByBatch);
+router.get("/vouchers/batch/:batchName", voucherController.getVouchersByBatch);
 router.get("/vouchers/user/:userId", voucherController.getVouchersByUser);
 router.delete(
   "/vouchers/batch/:batchName",
