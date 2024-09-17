@@ -1,23 +1,5 @@
 const userService = require("../services/userService");
-const multer = require("multer");
-const { GridFsStorage } = require("multer-gridfs-storage");
 require("dotenv").config();
-
-const { DATABASE_URL } = process.env;
-
-const storageUserProfile = new GridFsStorage({
-  url: DATABASE_URL,
-  file: (req, file) => {
-    return {
-      filename: `profile_${Date.now()}_${file.originalname}`, // Unique filename
-      bucketName: "userProfileImages", // Bucket name for GridFS
-    };
-  },
-});
-
-const uploadUserProfile = multer({ storage: storageUserProfile });
-
-exports.uploadUserProfile = uploadUserProfile;
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -30,7 +12,7 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
   try {
-    const { id } = req.params; 
+    const { id } = req.params;
     if (!id) {
       throw Error("User ID is required.");
     }
@@ -38,7 +20,6 @@ exports.getUserById = async (req, res) => {
     const user = await userService.getUserById(id);
     res.status(200).json(user);
   } catch (error) {
-    console.log(`Error: ${error.message}`); // Log error message
     res.status(400).send(error.message);
   }
 };
@@ -60,8 +41,6 @@ exports.updateEmail = async (req, res) => {
   try {
     const { id } = req.params;
     const { newEmail } = req.body;
-
-    console.log(id);
 
     if (!newEmail) {
       throw Error("New email addresses are required.");

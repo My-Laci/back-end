@@ -11,12 +11,11 @@ const searchController = require("../controllers/searchController");
 const internshipController = require("../controllers/internshipController");
 const router = express.Router();
 
-// Nambahj
-// Multer setup
+
 const storage = Multer.memoryStorage();
 const upload = Multer({ storage });
 
-router.get("/", (req, res) => {
+router.get("/", (res) => {
   res.status(200).json({
     message: "Welcome to Laci API Server.",
   });
@@ -33,13 +32,6 @@ const multer = Multer({
 });
 
 // Auth's routes
-router.get("/private-test", authMiddleware.verifyToken, (req, res) => {
-  res
-    .status(200)
-    .send(
-      `You're in the private territory of ${req.currentUser.payload.email}`
-    );
-});
 router.post("/signup", authController.signUp);
 router.post("/signin", upload.single("none"), authController.signIn);
 router.post("/signout", authController.signout);
@@ -121,7 +113,7 @@ router.post(
 );
 
 // Admin route
-router.get("/vouchers", voucherController.getAllVouchers); // Admin route
+router.get("/vouchers", voucherController.getAllVouchers);
 router.get('/vouchers/batch/:batchName', voucherController.getVouchersByBatch);
 router.get("/vouchers/user/:userId", voucherController.getVouchersByUser);
 router.delete(
@@ -131,6 +123,7 @@ router.delete(
 
 // Search routes
 router.get("/search", searchController.search);
+
 // Internship route
 router.post(
   "/internship",

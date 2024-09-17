@@ -1,4 +1,4 @@
-require("./config/db.js"); // Mengatur koneksi database
+require("./config/db.js");
 
 const express = require("express");
 const cors = require("cors");
