@@ -2,6 +2,11 @@ const Internship = require("../models/Intership");
 const internshipService = require("../services/internshipService");
 const userService = require("../services/userService");
 
+function generateCertificateNumber(id) {
+  const template = `${id}/Tsel/9090.1/2024`;
+  return template;
+}
+
 // Create Internship
 exports.createIntership = async (req, res) => {
   const { positions, startDate, endDate, verified, jobdesk } = req.body;
@@ -29,6 +34,10 @@ exports.createIntership = async (req, res) => {
 
   const jobdeskList = jobdesk.split(",").map((item) => item.trim());
 
+  // Generate random 4-character ID
+  const randomId = Math.random().toString(36).substring(2, 6).toUpperCase();
+  const certificateNumber = generateCertificateNumber(randomId);
+
   const data = {
     fullname,
     email,
@@ -38,6 +47,7 @@ exports.createIntership = async (req, res) => {
     verified,
     authorId,
     jobdesk: jobdeskList,
+    certificateNumber,
   };
 
   try {
