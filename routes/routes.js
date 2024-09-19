@@ -11,7 +11,6 @@ const searchController = require("../controllers/searchController");
 const internshipController = require("../controllers/internshipController");
 const router = express.Router();
 
-
 const storage = Multer.memoryStorage();
 const upload = Multer({ storage });
 
@@ -86,6 +85,7 @@ router.get("/articles/:id", articleController.getArticleById);
 router.get("/articles/user/:userId", articleController.getArticlesByUser);
 router.put(
   "/articles/:id",
+  upload.single("none"),
   authMiddleware.verifyToken,
   articleController.updateArticle
 );
