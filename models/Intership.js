@@ -37,6 +37,10 @@ const internshipSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    certificateNumber: { // Menambahkan field untuk nomor sertifikat
+      type: String,
+      unique: true,
+    },
   },
   {
     timestamps: true,
