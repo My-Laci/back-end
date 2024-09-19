@@ -45,6 +45,7 @@ exports.createArticle = async (req, res) => {
 };
 
 // Get all articles
+// Get all articles
 exports.getAllArticles = async (req, res) => {
   try {
     const articles = await articleService.getAllArticles();
@@ -53,17 +54,19 @@ exports.getAllArticles = async (req, res) => {
       _id: article._id,
       title: article.title,
       content: article.content,
-      author: {
-        _id: article.author._id,
-        name: article.author.name,
-        email: article.author.email,
-        agencyOrigin: article.author.agencyOrigin,
-        profileImg: article.author.profileImg,
-      },
+      author: article.author
+        ? {
+            _id: article.author._id,
+            name: article.author.name,
+            email: article.author.email,
+            agencyOrigin: article.author.agencyOrigin,
+            profileImg: article.author.profileImg,
+          }
+        : null, // Handle case where author is null
       image: article.image
         ? {
-          url: article.image,
-        }
+            url: article.image,
+          }
         : null,
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
@@ -97,8 +100,8 @@ exports.getArticleById = async (req, res) => {
       },
       image: article.image
         ? {
-          url: article.image,
-        }
+            url: article.image,
+          }
         : null,
       createdAt: article.createdAt,
       updatedAt: article.updatedAt,
