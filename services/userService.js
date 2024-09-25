@@ -13,7 +13,7 @@ conn.once("open", () => {
 
 exports.getAllUsers = async () => {
   try {
-    return await User.find({});
+    return await User.find({}).select("-password");
   } catch (error) {
     throw error;
   }
@@ -21,15 +21,13 @@ exports.getAllUsers = async () => {
 
 exports.getUserById = async (id) => {
   try {
-    console.log("Received ID:", id);
-    const user = await User.findById(id);
+    const user = await User.findById(id).select("-password");
     if (!user) {
       console.log("User not found with ID:", id);
       throw new Error("User not found");
     }
     return user;
   } catch (error) {
-    console.error("Error in getUserById:", error.message);
     throw error;
   }
 };
