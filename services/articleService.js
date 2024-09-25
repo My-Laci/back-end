@@ -1,4 +1,5 @@
 const Article = require("../models/Article");
+const User = require("../models/User");
 
 // Create an Article
 const createArticle = async (articleData) => {
@@ -8,10 +9,10 @@ const createArticle = async (articleData) => {
 
 // Get all articles
 const getAllArticles = async () => {
-  return await Article.find().populate(
-    "author",
-    "name email agencyOrigin profileImg"
-  );
+  // Mengambil semua artikel dan populate data pengguna
+  return await Article.find()
+    .populate("author", "name email agencyOrigin profileImg") // Mengambil informasi pengguna
+    .sort({ createdAt: -1 }); // Mengurutkan berdasarkan tanggal terbaru
 };
 
 // Get article by ID

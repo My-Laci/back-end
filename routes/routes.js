@@ -11,7 +11,6 @@ const searchController = require("../controllers/searchController");
 const internshipController = require("../controllers/internshipController");
 const router = express.Router();
 
-
 const storage = Multer.memoryStorage();
 const upload = Multer({ storage });
 
@@ -36,11 +35,7 @@ router.post("/signup", authController.signUp);
 router.post("/signin", upload.single("none"), authController.signIn);
 router.post("/signout", authController.signout);
 router.get("/users", authMiddleware.verifyToken, userController.getAllUsers);
-router.get(
-  "/users/:id",
-  authMiddleware.verifyToken,
-  userController.getUserById
-);
+router.get("/users/:id", userController.getUserById);
 
 // User's routes
 router.patch(
@@ -86,6 +81,7 @@ router.get("/articles/:id", articleController.getArticleById);
 router.get("/articles/user/:userId", articleController.getArticlesByUser);
 router.put(
   "/articles/:id",
+  upload.single("none"),
   authMiddleware.verifyToken,
   articleController.updateArticle
 );

@@ -10,8 +10,6 @@ exports.createPost = async (req, res) => {
   const { caption, tag } = req.body;
   const imageContent = req.files;
   const author = req.currentUser.payload.id;
-  console.log(author);
-  const authorData = await userService.getUserById(author);
 
   if (!caption) {
     return res.status(400).json({ message: "Caption is required" });
@@ -31,9 +29,6 @@ exports.createPost = async (req, res) => {
     const tags = Array.isArray(tag) ? [...new Set(tag)] : [];
 
     const postData = {
-      fullname: authorData.name,
-      agencyOrigin: authorData.agencyOrigin,
-      profileImage: authorData.profileImg,
       caption,
       tag,
       author,

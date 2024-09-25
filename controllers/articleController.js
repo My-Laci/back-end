@@ -145,16 +145,13 @@ exports.updateArticle = async (req, res) => {
   try {
     const { id } = req.params;
     const { title, content } = req.body;
-
     const updatedArticle = await articleService.updateArticle(id, {
       title,
       content,
     });
-
     if (!updatedArticle) {
       return res.status(404).json({ message: "Article not found" });
     }
-
     const modifiedArticle = {
       _id: updatedArticle._id,
       title: updatedArticle.title,
@@ -164,7 +161,6 @@ exports.updateArticle = async (req, res) => {
       createdAt: updatedArticle.createdAt,
       updatedAt: updatedArticle.updatedAt,
     };
-
     res.status(200).json(modifiedArticle);
   } catch (error) {
     res.status(500).json({ error: error.message });
