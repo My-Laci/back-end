@@ -11,7 +11,6 @@ const searchController = require("../controllers/searchController");
 const internshipController = require("../controllers/internshipController");
 const router = express.Router();
 
-
 const storage = Multer.memoryStorage();
 const upload = Multer({ storage });
 
@@ -93,6 +92,16 @@ router.delete(
   "/articles/:id",
   authMiddleware.verifyToken,
   articleController.deleteArticle
+);
+router.post(
+  "/articles/:id/like",
+  authMiddleware.verifyToken,
+  articleController.likeArticle
+);
+router.post(
+  "/articles/:id/unlike",
+  authMiddleware.verifyToken,
+  articleController.unlikeArticle
 );
 
 // Post's routers

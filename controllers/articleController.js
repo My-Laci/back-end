@@ -194,3 +194,33 @@ exports.deleteArticle = async (req, res) => {
     });
   }
 };
+
+// Like an article
+exports.likeArticle = async (req, res) => {
+  const articleId = req.params.id;
+  const userId = req.currentUser.payload.id;
+
+  try {
+    const article = await articleService.likeArticle(articleId, userId);
+    return res
+      .status(200)
+      .json({ message: "Article liked successfully", article });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Unlike an article
+exports.unlikeArticle = async (req, res) => {
+  const articleId = req.params.id;
+  const userId = req.currentUser.payload.id;
+
+  try {
+    const article = await articleService.unlikeArticle(articleId, userId);
+    return res
+      .status(200)
+      .json({ message: "Article unliked successfully", article });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
