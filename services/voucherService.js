@@ -2,6 +2,8 @@ const { nanoid } = require("nanoid");
 const Voucher = require("../models/Voucher");
 
 exports.createVoucherBatch = async (batchName, quantity, userId) => {
+  batchName = batchName.trim();
+
   const vouchers = [];
 
   for (let i = 0; i < quantity; i++) {

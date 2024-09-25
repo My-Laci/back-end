@@ -35,11 +35,7 @@ router.post("/signup", authController.signUp);
 router.post("/signin", upload.single("none"), authController.signIn);
 router.post("/signout", authController.signout);
 router.get("/users", authMiddleware.verifyToken, userController.getAllUsers);
-router.get(
-  "/users/:id",
-  authMiddleware.verifyToken,
-  userController.getUserById
-);
+router.get("/users/:id", userController.getUserById);
 
 // User's routes
 router.patch(

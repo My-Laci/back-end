@@ -1,4 +1,5 @@
 const Post = require("../models/post");
+const User = require("../models/User");
 
 exports.createPost = async (postData) => {
   const data = postData;
@@ -28,17 +29,22 @@ exports.updatePost = async (id, newData) => {
 };
 
 exports.getUserPost = async (userId) => {
-  const getPost = await Post.find({ author: userId });
+  const getPost = await Post.find({ author: userId })
+    .populate("author", "name agencyOrigin profileImg");
   return getPost;
 };
 
 exports.getAllPost = async () => {
-  const getPost = await Post.find();
+  const getPost = await Post.find()
+    .populate("author", "name agencyOrigin profileImg")
+    .sort({ createdAt: -1 });
+
   return getPost;
 };
 
 exports.getPostDetail = async (id) => {
-  const getDetailPost = await Post.findById(id);
+  const getDetailPost = await Post.findById(id)
+    .populate("author", "name agencyOrigin profileImg");
   return getDetailPost;
 };
 
