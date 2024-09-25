@@ -56,6 +56,40 @@ const deleteArticle = async (id) => {
   }
 };
 
+// Like an article
+const likeArticle = async (articleId, userId) => {
+  const article = await Article.findById(articleId);
+  if (!article) {
+    throw new Error("Article not found");
+  }
+
+  // Check if user already liked the article
+  if (article.likes.includes(userId)) {
+    throw new Error("User already liked this article");
+  }
+
+  article.likes.push(userId);
+  await article.save();
+  return article;
+};
+
+// Unlike an article
+const unlikeArticle = async (articleId, userId) => {
+  const article = await Article.findById(articleId);
+  if (!article) {
+    throw new Error("Article not found");
+  }
+
+  // Check if user has not liked the article
+  if (!article.likes.includes(userId)) {
+    throw new Error("User has not liked this article");
+  }
+
+  article.likes = article.likes.filter((like) => like.toString() !== userId);
+  await article.save();
+  return article;
+};
+
 module.exports = {
   getAllArticles,
   getArticleById,
@@ -63,4 +97,6 @@ module.exports = {
   createArticle,
   updateArticle,
   deleteArticle,
+  likeArticle,
+  unlikeArticle,
 };

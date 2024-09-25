@@ -90,6 +90,16 @@ router.delete(
   authMiddleware.verifyToken,
   articleController.deleteArticle
 );
+router.post(
+  "/articles/:id/like",
+  authMiddleware.verifyToken,
+  articleController.likeArticle
+);
+router.post(
+  "/articles/:id/unlike",
+  authMiddleware.verifyToken,
+  articleController.unlikeArticle
+);
 
 // Post's routers
 router.post(
