@@ -135,3 +135,33 @@ exports.deletePost = async (req, res) => {
     });
   }
 };
+
+// Like a post
+exports.likePost = async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.currentUser.payload.id;
+
+  try {
+    const post = await postService.likePost(postId, userId);
+    return res
+      .status(200)
+      .json({ message: "Post liked successfully", post });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+// Unlike a post
+exports.unlikePost = async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.currentUser.payload.id;
+
+  try {
+    const post = await postService.unlikePost(postId, userId);
+    return res
+      .status(200)
+      .json({ message: "Post unliked successfully", post });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};

@@ -7,19 +7,21 @@ const PostSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    tag: [
-      {
-        type: String,
-      },
-    ],
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
-    imageContent: [
+    imageContent: {
+      type: [String], // array of image URLs
+    },
+    tag: {
+      type: [String],
+    },
+    likes: [
       {
-        type: String,
-        required: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
       },
     ],
   },

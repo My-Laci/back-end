@@ -122,6 +122,8 @@ router.delete(
   authMiddleware.verifyToken,
   postController.deletePost
 );
+router.post("/posts/:id/like", authMiddleware.verifyToken, postController.likePost);
+router.post("/posts/:id/unlike", authMiddleware.verifyToken, postController.unlikePost);
 
 // Voucher's routes
 router.post(
