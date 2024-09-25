@@ -52,3 +52,37 @@ exports.deletePost = async (postId) => {
   const result = await Post.findByIdAndDelete(postId);
   return result;
 };
+
+// Like a post
+exports.likePost = async (postId, userId) => {
+  const post = await Post.findById(postId);
+  if (!post) {
+    throw new Error("Post not found");
+  }
+
+  // Check if user already liked the post
+  if (post.likes.includes(userId)) {
+    throw new Error("User already liked this post");
+  }
+
+  post.likes.push(userId);
+  await post.save();
+  return post;
+};
+
+// Unlike a post
+exports.unlikePost = async (postId, userId) => {
+  const post = await Post.findById(postId);
+  if (!post) {
+    throw new Error("Post not found");
+  }
+
+  // Check if user has not liked the post
+  if (!post.likes.includes(userId)) {
+    throw new Error("User has not liked this post");
+  }
+
+  post.likes = post.likes.filter((like) => like.toString() !== userId);
+  await post.save();
+  return post;
+};
