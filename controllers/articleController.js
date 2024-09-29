@@ -1,6 +1,7 @@
 const articleService = require("../services/articleService");
 const userService = require("../services/userService");
 const mediaService = require("../services/mediaService");
+const Article = require("../models/Article");
 
 // Create a new article
 exports.createArticle = async (req, res) => {
@@ -193,30 +194,34 @@ exports.deleteArticle = async (req, res) => {
 
 // Like an article
 exports.likeArticle = async (req, res) => {
-  const articleId = req.params.id;
-  const userId = req.currentUser.payload.id;
+  const { userId } = req.body;
+  const id = req.params.id;
 
-  try {
-    const article = await articleService.likeArticle(articleId, userId);
+  const article = await Article.findById(id);
+
+  if (article.likes.includes(userId)) {
     return res
-      .status(200)
-      .json({ message: "Article liked successfully", article });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
+      .status(400)
+      .json({ message: "User has already liked this article." });
   }
+
+  article.likes.push(userId);
+  await article.save();
+  res.status(200).json(article);
 };
 
 // Unlike an article
 exports.unlikeArticle = async (req, res) => {
-  const articleId = req.params.id;
-  const userId = req.currentUser.payload.id;
+  const { userId } = req.body;
+  const id = req.params.id;
 
-  try {
-    const article = await articleService.unlikeArticle(articleId, userId);
-    return res
-      .status(200)
-      .json({ message: "Article unliked successfully", article });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
+  const article = await Article.findById(id);
+
+  if (!article.likes.includes(userId)) {
+    return res.status(400).json({ message: "User has not liked this post." });
   }
+
+  article.likes.pull(userId);
+  await article.save();
+  res.status(200).json(article);
 };
