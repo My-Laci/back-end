@@ -111,8 +111,16 @@ exports.updateInternship = async (req, res) => {
   };
 
   if (jobdesk) {
-    const jobdeskList = jobdesk.split(",").map((item) => item.trim());
-    newData.jobdesk = jobdeskList;
+    if (typeof jobdesk === "string") {
+      console.log("ini jobdesk (string)", jobdesk);
+      const jobdeskList = jobdesk.split(",").map((item) => item.trim());
+      newData.jobdesk = jobdeskList;
+    } else if (Array.isArray(jobdesk)) {
+      console.log("ini jobdesk (array)", jobdesk);
+      newData.jobdesk = jobdesk; 
+    } else {
+      console.warn("Unexpected jobdesk format:", typeof jobdesk);
+    }
   }
 
   try {
